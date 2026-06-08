@@ -12,6 +12,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "radhayuapi.bwdemo.in",
+      },
+
+      {
+        protocol: "https",
         hostname: "www.facebook.com",
         pathname: "/**",
       },

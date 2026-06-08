@@ -66,7 +66,7 @@ export default function CategoryBar() {
                 />
               </div>
 
-              <p className="mt-2 text-md font-bold text-gray-700 text-center group-hover:text-gray-900">
+              <p className="mt-2 text-xl  italic font-bold text-gray-700 text-center group-hover:text-gray-900">
                 {cat.title}
               </p>
             </div>

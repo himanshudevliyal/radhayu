@@ -1,5 +1,7 @@
 "use client";
 
+import { SectionHeading } from "@/components/layout/heading";
+
 const FeaturedProducts = () => {
   return (
     <section className="py-20 ">

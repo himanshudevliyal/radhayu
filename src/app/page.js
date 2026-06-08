@@ -11,6 +11,7 @@ import Reviews from "@/home/reviews";
 import { Marquee } from "@/components/ui/marquee";
 import FeaturesSection from "@/home/features";
 import Section from "@/components/layout/section";
+import { SectionHeading } from "@/components/layout/heading";
 export default function Home() {
   return (
     <>
@@ -19,6 +20,20 @@ export default function Home() {
       <CategoryBar></CategoryBar>
       <FeaturesSection></FeaturesSection>
       <Section className="relative overflow-hidden px-4  bg-white">
+        <SectionHeading
+          badge="Products"
+          title={"Our Products "}
+          des={
+            <>
+              We believe in building lasting relationships with our patients,
+              offering not <br />
+              just medications, but comprehensive health support.
+            </>
+          }
+          highlight="Concern"
+          className="mb-14 md:text-xl text-center"
+          titleClassName="text-4xl"
+        />
         <TrendingProducts></TrendingProducts>
       </Section>{" "}
       <AyurvedicSection></AyurvedicSection>

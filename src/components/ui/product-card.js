@@ -4,6 +4,7 @@ import config from "@/config";
 import Link from "next/link";
 
 export default function ProductCards({ product }) {
+  console.log(product);
   return (
     <div className="group p-2 rounded-3xl border border-white/30 bg-white/70 backdrop-blur-xl shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
       <div className="relative">
@@ -13,16 +14,19 @@ export default function ProductCards({ product }) {
             height={500}
             src={`${config.file_base}${product.pictures?.[0]}`}
             alt={product.title}
-            className=" w-full h-50 object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
+            className=" w-full h-90   object-contain transition-transform duration-700 ease-in-out group-hover:scale-105"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition" />
+          {/* <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition" /> */}
         </div>
 
         {/* Category */}
-        <span className="absolute bg-green-100 left-4 top-4 rounded-full  px-3 py-1.5 text-xs font-medium text-gray-800 backdrop-blur">
-          {product.category}
-        </span>
+
+        {product.category && (
+          <span className="absolute bg-green-100 left-4 top-4 rounded-full  px-3 py-1.5 text-xs font-medium text-gray-800 backdrop-blur">
+            {product.category}
+          </span>
+        )}
       </div>
 
       {/* Content */}

@@ -119,14 +119,14 @@ export default function ProductPage({ product }) {
             </div>
 
             {/* Main Image with Lens */}
-            <div className="relative flex-1 overflow-hidden rounded-2xl bg-muted shadow-sm cursor-none">
+            <div className="relative flex-1 overflow-hidden rounded-2xl  shadow-sm cursor-none">
               <Lens zoomFactor={2} lensSize={150} isStatic={false}>
                 <Image
                   src={`${config.file_base}${pictures?.[0]}`}
                   alt="Immunity Booster"
                   width={600}
                   height={600}
-                  className="aspect-square w-full object-cover"
+                  className="  object-contain   mix-blend-multiply max-h-[500px]"
                 />
               </Lens>
             </div>
