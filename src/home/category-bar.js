@@ -7,19 +7,17 @@ import { SectionHeading } from "@/components/layout/heading";
 import { useQuery } from "@tanstack/react-query";
 import http from "@/utils/http";
 import { endpoints } from "@/utils/endpoints";
+import Link from "next/link";
 // ✅ removed wrong `data` import from autoprefixer
 
 export default function CategoryBar() {
   const { data: categories, isLoading } = useQuery({
-    // ✅ renamed to isLoading
     queryKey: ["categories"],
     queryFn: async () => {
       const { data } = await http().get(`${endpoints.categories.getAll}`);
-      return data?.categories; // ✅ fixed ternary typo: `data?data?.categories` → `data?.categories`
+      return data?.categories;
     },
   });
-
-  console.log(categories); // ✅ log the actual query result
 
   return (
     <Section className="relative">
@@ -51,7 +49,11 @@ export default function CategoryBar() {
       ) : (
         <div className="flex gap-10 py-4 overflow-x-auto scrollbar-hide justify-center mb-5">
           {categories?.map((cat) => (
-            <div key={cat.id} className="group min-w-[96px] items-center">
+            <Link
+              href={`products?category=${cat.id}`}
+              key={cat.id}
+              className="group min-w-[96px] items-center"
+            >
               <div
                 className="rounded-[100px] overflow-hidden bg-gray-100
                 shadow-sm transition-all duration-300
@@ -69,7 +71,7 @@ export default function CategoryBar() {
               <p className="mt-2 text-xl  italic font-bold text-gray-700 text-center group-hover:text-gray-900">
                 {cat.title}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
       )}

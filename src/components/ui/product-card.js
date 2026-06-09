@@ -22,9 +22,9 @@ export default function ProductCards({ product }) {
 
         {/* Category */}
 
-        {product.category && (
+        {product.category_name && (
           <span className="absolute bg-green-100 left-4 top-4 rounded-full  px-3 py-1.5 text-xs font-medium text-gray-800 backdrop-blur">
-            {product.category}
+            {product.category_name}
           </span>
         )}
       </div>

@@ -49,7 +49,7 @@ export function FilterSidebar({
   };
 
   return (
-    <div className="rounded-xl border bg-card p-4 md:p-5 space-y-5">
+    <div className="rounded-xl border bg-card p-4 md:p-5 space-y-5 sticky top-20">
       {/* Title */}
       <div>
         <h2 className="text-2xl font-semibold">{title}</h2>
@@ -63,7 +63,7 @@ export function FilterSidebar({
           onClick={onClear}
           className={cn(
             "w-full border-destructive text-destructive",
-            "hover:bg-destructive/10"
+            "hover:bg-destructive/10",
           )}
         >
           <XCircle className="mr-2 h-4 w-4" />
@@ -91,7 +91,7 @@ export function FilterSidebar({
                     key={cat.id}
                     className={cn(
                       "flex items-center justify-between rounded-lg px-3 py-2 transition-colors",
-                      checked && "bg-primary/5"
+                      checked && "bg-primary/5",
                     )}
                   >
                     <span className="capitalize text-sm">{cat.title}</span>
