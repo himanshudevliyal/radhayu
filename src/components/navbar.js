@@ -20,12 +20,9 @@ import {
 
 const offers = [
   "Free Shipping On Orders Above Rs1000",
-  "B1G1 Sale Is Live",
-  "Flat 15% Off on Ayurvedic Medicines",
   "100% Natural & Herbal Products",
   "Boost Immunity with Ayurvedic Care",
   "Trusted Ayurvedic Brands Available",
-  "Extra 10% Off on Herbal Supplements",
 ];
 
 const navLinks = [

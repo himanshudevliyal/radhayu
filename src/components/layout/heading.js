@@ -1,11 +1,12 @@
 export function SectionHeading({
   badge,
-  title, // ReactNode (JSX) now, not string
+  title,
   highlight,
   des,
-  highlightAlign = "inline", // "inline" or "center"
+  highlightAlign = "inline",
   className = "",
   titleClassName = "",
+  desClassName = "",
 }) {
   return (
     <div className={`text-center ${className}`}>
@@ -16,7 +17,7 @@ export function SectionHeading({
       )}
 
       <h2
-        className={`font-bold leading-tight text-[#1F1F1F] ${titleClassName} ${
+        className={`font-bold leading-tight text-[#1F1F1F] text-4xl ${titleClassName} ${
           highlightAlign === "center" ? "text-center" : ""
         }`}
       >
@@ -32,7 +33,9 @@ export function SectionHeading({
         )}
       </h2>
 
-      <p className="my-6 text-base leading-relaxed text-muted-foreground">
+      <p
+        className={`my-6 text-base leading-relaxed text-muted-foreground text-balance ${desClassName}`}
+      >
         {des}
       </p>
     </div>

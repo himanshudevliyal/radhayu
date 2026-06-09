@@ -34,12 +34,13 @@ export default function CategoryBar() {
         title={"Shop by "}
         des={
           <>
-            We believe in building lasting relationships with our patients,
-            offering not <br />
-            just medications, but comprehensive health support.
+            Explore our range of Ayurvedic wellness solutions crafted with
+            traditional herbal <br></br> wisdom to support your everyday health
+            and well-being.
           </>
         }
-        highlight="Concern"
+        highlight=" Category
+"
         className="mb-14 md:text-xl text-center"
         titleClassName="text-4xl"
       />

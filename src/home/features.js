@@ -1,63 +1,68 @@
 "use client";
 
 import Image from "next/image";
-import { Star, FlaskConical, Leaf, Search } from "lucide-react";
 import { SectionHeading } from "@/components/layout/heading";
 import Section from "@/components/layout/section";
 
+import {
+  Leaf,
+  Sprout,
+  HeartHandshake,
+  ShieldCheck,
+  BadgeCheck,
+  Factory,
+} from "lucide-react";
+
 const features = [
-  {
-    icon: Star,
-    title: "Best Hair Care Item",
-    description:
-      "Ranked as the Best Hair Care Item, rinse-free hair treatment nourishes and repairs damaged hair from root to tip.",
-    accent: "#c9a96e",
-    tag: "Award Winning",
-    position: "left",
-  },
-  {
-    icon: FlaskConical,
-    title: "Advance Formula",
-    description:
-      "Formulated with 7 naturally-infused oils and proteins, deeply moisturizes and nourishes every strand.",
-    accent: "#7a8fa8",
-    tag: "7 Botanicals",
-    position: "left",
-  },
-  {
-    icon: Star,
-    title: "Best Hair Care Item",
-    description:
-      "Ranked as the Best Hair Care Item, rinse-free hair treatment nourishes and repairs damaged hair from root to tip.",
-    accent: "#c9a96e",
-    tag: "Award Winning",
-    position: "left",
-  },
+  // LEFT
   {
     icon: Leaf,
-    title: "Sustainable Practices",
+    title: "Authentic Ayurvedic Formulations",
     description:
-      "We prioritize sustainability in every aspect, from sourcing organic ingredients to eco-conscious packaging.",
-    accent: "#7a9e7e",
-    tag: "Eco Certified",
-    position: "right",
-  },
-  {
-    icon: Search,
-    title: "Full Transparency",
-    description:
-      "We maintain complete transparency, ensuring every ingredient is traceable back to its source.",
-    accent: "#7a8fa8",
-    tag: "100% Traceable",
-    position: "right",
-  },
-  {
-    icon: Star,
-    title: "Best Hair Care Item",
-    description:
-      "Ranked as the Best Hair Care Item, rinse-free hair treatment nourishes and repairs damaged hair from root to tip.",
+      "Crafted using time-tested Ayurvedic principles and traditional herbal combinations trusted for generations.",
     accent: "#c9a96e",
-    tag: "Award Winning",
+    position: "left",
+  },
+  {
+    icon: Sprout,
+    title: "Carefully Selected Ingredients",
+    description:
+      "Every product is developed using high-quality herbs and natural ingredients sourced with care.",
+    accent: "#7a9e7e",
+    position: "left",
+  },
+  {
+    icon: HeartHandshake,
+    title: "Holistic Wellness Approach",
+    description:
+      "Our formulations focus on supporting overall well-being by addressing health concerns naturally.",
+    accent: "#b07d6e",
+    position: "left",
+  },
+
+  // RIGHT
+  {
+    icon: ShieldCheck,
+    title: "Quality & Safety Standards",
+    description:
+      "Manufactured in certified facilities following stringent quality control and Ayurvedic manufacturing standards.",
+    accent: "#7a8fa8",
+    position: "right",
+  },
+  {
+    icon: BadgeCheck,
+    title: "Trusted Natural Solutions",
+    description:
+      "From digestive wellness to liver care and daily health support, our products are designed for everyday wellness.",
+    accent: "#c9a96e",
+    position: "right",
+  },
+  {
+    icon: Factory,
+    title: "Tradition Meets Modern Excellence",
+    description:
+      "Combining ancient Ayurvedic wisdom with modern manufacturing practices for consistent quality and effectiveness.",
+    accent: "#7a9e7e",
     position: "right",
   },
 ];
@@ -108,24 +113,6 @@ const Mandala = () => (
   </svg>
 );
 
-const FloralDot = ({ className }) => (
-  <svg viewBox="0 0 20 20" fill="currentColor" className={className}>
-    <circle cx="10" cy="10" r="2.5" />
-    {[0, 60, 120, 180, 240, 300].map((a, i) => (
-      <ellipse
-        key={i}
-        cx={10 + 4.5 * Math.cos((a * Math.PI) / 180)}
-        cy={10 + 4.5 * Math.sin((a * Math.PI) / 180)}
-        rx="1.8"
-        ry="3.2"
-        transform={`rotate(${a} ${10 + 4.5 * Math.cos((a * Math.PI) / 180)} ${
-          10 + 4.5 * Math.sin((a * Math.PI) / 180)
-        })`}
-      />
-    ))}
-  </svg>
-);
-
 export default function FeaturesSection() {
   const leftFeatures = features.filter((f) => f.position === "left");
   const rightFeatures = features.filter((f) => f.position === "right");
@@ -156,15 +143,16 @@ export default function FeaturesSection() {
 
       {/* Header */}
       <SectionHeading
-        badge="Categories"
-        title={"Shop by "}
-        des=<>
-          We believe in building lasting relationships with our patients,
-          offering not <br></br>just medications, but comprehensive health
-          support that helps you live your best life.
-        </>
-        highlight="Concern"
-        className="mb-14 md:text-xl text-center"
+        badge=" Why Choose Radhayu"
+        title="Rooted in Ayurveda, "
+        highlight="Trusted for Wellness"
+        des={
+          <>
+            Every formulation is crafted using traditional Ayurvedic wisdom,
+            carefully selected herbs, and a commitment to natural well-being.
+          </>
+        }
+        className="mb-14 text-center"
         titleClassName="text-4xl"
       />
       <div className="grid  gap-8 md:grid-cols-[1fr_auto_1fr] items-center ">
@@ -201,22 +189,8 @@ export default function FeaturesSection() {
             style={{ borderColor: "#c9a96e", borderStyle: "dashed" }}
           />
 
-          {/* Floating petal accents */}
-          <FloralDot
-            className="absolute top-8 left-4 h-5 w-5 opacity-40"
-            style={{ color: "#c9a96e" }}
-          />
-          <FloralDot
-            className="absolute bottom-16 right-2 h-4 w-4 opacity-30 animate-pulse"
-            style={{ color: "#b07d6e" }}
-          />
-          <FloralDot
-            className="absolute top-1/2 -right-2 h-3 w-3 opacity-25"
-            style={{ color: "#7a9e7e" }}
-          />
-
           <Image
-            src="/img/product-bottle.jpg"
+            src="/img/why-choose.png"
             alt="Deep Nourishing Treatment"
             width={240}
             height={400}
@@ -251,23 +225,6 @@ export default function FeaturesSection() {
             />
           ))}
         </div>
-      </div>
-
-      {/* Bottom divider */}
-      <div className="mt-20 flex items-center justify-center gap-4 opacity-30">
-        <div
-          className="h-px flex-1"
-          style={{
-            background: "linear-gradient(90deg, transparent, #c9a96e)",
-          }}
-        />
-        <FloralDot className="h-5 w-5" style={{ color: "#c9a96e" }} />
-        <div
-          className="h-px flex-1"
-          style={{
-            background: "linear-gradient(90deg, #c9a96e, transparent)",
-          }}
-        />
       </div>
     </Section>
   );

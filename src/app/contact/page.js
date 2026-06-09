@@ -3,7 +3,7 @@ import ContactForm from "@/components/form/contact-us";
 import { SectionHeading } from "@/components/layout/heading";
 import Section from "@/components/layout/section";
 import FAQ from "@/home/faq";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, GlobeXIcon } from "lucide-react";
 
 export default function ContactPage() {
   return (
@@ -32,7 +32,12 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Phone</h3>
-                    <p className="text-green-100">+1 (415) 555-2478</p>
+                    <a
+                      href="tel:+919711975094"
+                      className="text-green-100 hover:text-white transition-colors"
+                    >
+                      +91 97119 75094
+                    </a>
                   </div>
                 </div>
 
@@ -43,7 +48,12 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Email</h3>
-                    <p className="text-green-100">support@prana.com</p>
+                    <a
+                      href="mailto:radhayuherbals@gmail.com"
+                      className="text-green-100 hover:text-white transition-colors"
+                    >
+                      radhayuherbals@gmail.com
+                    </a>
                   </div>
                 </div>
 
@@ -55,7 +65,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-lg">Address</h3>
                     <p className="text-green-100">
-                      210 Harmony Ave, Sedona, AZ
+                      DPT 808B, F79 & 80, DLF Prime Tower, Industrial Area,
+                      Okhla Phase-1, New Delhi - 110020
                     </p>
                   </div>
                 </div>
@@ -63,13 +74,18 @@ export default function ContactPage() {
                 {/* Working Hours */}
                 <div className="flex items-start gap-4">
                   <div className="bg-white/10 p-3 rounded-lg">
-                    <Clock size={20} />
+                    <GlobeXIcon size={20} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">Working Hours</h3>
-                    <p className="text-green-100">
-                      Mon – Fri : 8:00AM – 8:00PM
-                    </p>
+                    <h3 className="font-semibold text-lg">Website</h3>
+                    <a
+                      href="https://radhayuherbals.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-green-100 hover:text-white transition-colors"
+                    >
+                      www.radhayuherbals.com
+                    </a>
                   </div>
                 </div>
               </div>

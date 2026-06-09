@@ -48,42 +48,74 @@ export default function AboutSection() {
           <div>
             <SectionHeading
               badge="About Us"
-              title={"Sanctuary for Ayurvedic Healing and Wellness"}
-              des=" At Viwana, we embrace authentic Ayurveda to nurture holistic
-            wellness, empowering you to find balance and rejuvenation in life."
-              highlight="for you!"
-              className=" text-left"
+              title="Ancient Ayurvedic Wisdom for Modern Well-Being"
+              des="At Radhaayu Herbals, we believe that true wellness begins with nature. Inspired by the timeless principles of Ayurveda, our formulations are carefully crafted using trusted herbs and traditional knowledge to support holistic health and everyday well-being. From digestive care and detoxification to immunity, vitality, and wellness support, our mission is to help individuals embrace a healthier and more balanced lifestyle through natural Ayurvedic solutions."
+              className="text-left"
               titleClassName="text-4xl"
             />
 
             {/* FEATURES */}
             <div className="space-y-6">
               <div className="flex gap-4">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full border border-green-700 text-green-700">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary">
                   ✓
                 </span>
                 <div>
                   <h4 className="font-semibold text-lg text-gray-900">
-                    Ayurvedic Expertise
+                    Authentic Ayurvedic Formulations
                   </h4>
                   <p className="text-gray-600 text-sm">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
-                    elit tellus, luctus nec ullamcorper mattis.
+                    Every product is developed using time-tested Ayurvedic
+                    ingredients selected for their purity, effectiveness, and
+                    traditional wellness benefits.
                   </p>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full border border-green-700 text-green-700">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary">
                   ✓
                 </span>
                 <div>
                   <h4 className="font-semibold text-lg text-gray-900">
-                    Ayurvedic Expertise
+                    Nature-Powered Wellness
                   </h4>
                   <p className="text-gray-600 text-sm">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
-                    elit tellus, luctus nec ullamcorper mattis.
+                    We focus on herbal ingredients and holistic healing
+                    approaches that work in harmony with the body&lsquo;s
+                    natural balance.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary">
+                  ✓
+                </span>
+                <div>
+                  <h4 className="font-semibold text-lg text-gray-900">
+                    Quality You Can Trust
+                  </h4>
+                  <p className="text-gray-600 text-sm">
+                    Our commitment to quality ensures that every formulation is
+                    prepared with carefully sourced ingredients and strict
+                    manufacturing standards.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary">
+                  ✓
+                </span>
+                <div>
+                  <h4 className="font-semibold text-lg text-gray-900">
+                    Supporting Everyday Health
+                  </h4>
+                  <p className="text-gray-600 text-sm">
+                    Whether it&lsquo;s digestion, detoxification, immunity, or
+                    general wellness, our products are designed to become a part
+                    of your daily health journey.
                   </p>
                 </div>
               </div>

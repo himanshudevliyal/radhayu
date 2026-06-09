@@ -9,21 +9,21 @@ const cards = [
     number: "01",
     title: "Our Vision",
     description:
-      "To create a sustainable and empowered community through awareness and collective action.",
+      "To make authentic Ayurvedic wellness accessible to every household by promoting natural, holistic, and sustainable approaches to health and well-being.",
     icon: Eye,
   },
   {
     number: "02",
     title: "Our Mission",
     description:
-      "To actively engage people in meaningful initiatives that improve society and the environment.",
+      "To develop trusted Ayurvedic formulations using carefully selected herbal ingredients that support everyday wellness, vitality, and long-term health naturally.",
     icon: Target,
   },
   {
     number: "03",
     title: "Our Values",
     description:
-      "Integrity, collaboration, compassion, and commitment drive everything we do.",
+      "Guided by purity, authenticity, quality, and customer trust, we remain committed to delivering wellness solutions inspired by the timeless principles of Ayurveda.",
     icon: HeartHandshake,
   },
 ];
@@ -40,13 +40,18 @@ export default function VisionSection() {
       />
       <div className="   relative z-10">
         <SectionHeading
-          badge="values"
-          title={"Healing and Wellness"}
-          des=" At Viwana, we embrace authentic Ayurveda to nurture holistic
-                wellness, empowering you to find balance and rejuvenation in life."
-          highlight="for you!"
-          className=" text-center"
-          titleClassName="text-4xl"
+          badge="About Radhaayu"
+          title="Rooted in Ayurveda, "
+          highlight="Committed to Wellness"
+          des={
+            <>
+              At Radhaayu Herbals, we combine the wisdom of traditional Ayurveda
+              with a commitment to quality and natural healing, helping
+              individuals embrace a healthier and more balanced lifestyle.
+            </>
+          }
+          desClassName="text-balance"
+          className="text-4xl"
         />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-12">
           {cards.map((card, index) => {

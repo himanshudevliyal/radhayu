@@ -13,47 +13,55 @@ import { Button } from "@/components/ui/button";
 
 const leftFaqs = [
   {
-    q: "Are your Ayurvedic medicines made from natural ingredients?",
-    a: "Yes, all our Ayurvedic medicines are prepared using natural herbs, roots, and plant-based ingredients as per traditional Ayurvedic principles.",
+    q: "What makes Radhaayu Herbals different from other Ayurvedic brands?",
+    a: "Radhaayu Herbals combines traditional Ayurvedic wisdom with carefully selected natural ingredients to create products that support holistic health, wellness, and long-term well-being.",
   },
   {
-    q: "Do your Ayurvedic products have any side effects?",
-    a: "Ayurvedic medicines are generally safe when taken as recommended. However, we advise consulting an Ayurvedic practitioner for personalized guidance.",
+    q: "Are Radhaayu products made from natural ingredients?",
+    a: "Yes. Our formulations are crafted using Ayurvedic herbs, botanical extracts, and traditional ingredients known for their wellness benefits.",
   },
   {
-    q: "Can Ayurvedic medicines be taken daily?",
-    a: "Yes, many Ayurvedic medicines and supplements are designed for daily use, but dosage depends on body type (Prakriti) and health condition.",
+    q: "Do your products contain harmful chemicals or preservatives?",
+    a: "We focus on using quality ingredients and traditional Ayurvedic formulations. Product-specific ingredient details are available on each product page.",
   },
   {
-    q: "Are your medicines free from chemicals and preservatives?",
-    a: "Yes, our Ayurvedic products are free from harmful chemicals, artificial colors, and preservatives, ensuring purity and authenticity.",
+    q: "Which health concerns do your products support?",
+    a: "Our range is designed to support various wellness needs including digestion, immunity, detoxification, skin care, hair care, joint health, and overall vitality.",
   },
   {
-    q: "Do you offer medicines for immunity and general wellness?",
-    a: "Yes, we offer a wide range of Ayurvedic medicines that support immunity, digestion, stress relief, and overall wellness.",
+    q: "Are Ayurvedic products safe for daily use?",
+    a: "Many Ayurvedic products can be incorporated into a daily wellness routine when used as directed. Always follow the recommended dosage and usage instructions.",
+  },
+  {
+    q: "How long does it take to see results from Ayurvedic products?",
+    a: "Ayurveda focuses on restoring balance naturally. Results may vary depending on the individual, health condition, lifestyle, and consistency of use.",
   },
 ];
 
 const rightFaqs = [
   {
-    q: "Can Ayurvedic medicines be taken along with allopathic medicines?",
-    a: "In many cases, yes. However, it is best to consult a doctor or Ayurvedic expert to avoid any possible interactions.",
+    q: "Can Ayurvedic products be taken alongside modern medicines?",
+    a: "In many cases they can be used together, but we recommend consulting a healthcare professional if you are taking prescription medications or undergoing treatment.",
   },
   {
-    q: "How long does it take for Ayurvedic medicines to show results?",
-    a: "Ayurveda works holistically, so results may take time depending on the condition, lifestyle, and regularity of usage.",
+    q: "Are your products suitable for all age groups?",
+    a: "Our product range includes formulations suitable for different age groups. Please refer to the product label or consult a healthcare professional before use.",
   },
   {
-    q: "Do you provide consultation before suggesting medicines?",
-    a: "Yes, we can guide you based on your health concern and recommend suitable Ayurvedic solutions.",
+    q: "How should I store Ayurvedic medicines?",
+    a: "Store products in a cool, dry place away from direct sunlight and moisture. Always keep the container tightly closed after use.",
   },
   {
-    q: "Are your Ayurvedic medicines suitable for all age groups?",
-    a: "Most medicines are suitable for adults. For children and elderly individuals, specific formulations and dosages are recommended.",
+    q: "Do you offer products for preventive wellness as well as specific concerns?",
+    a: "Yes. Along with targeted formulations, we also offer products that help support overall wellness, immunity, digestion, and healthy living.",
   },
   {
-    q: "How should Ayurvedic medicines be stored?",
-    a: "They should be stored in a cool, dry place away from direct sunlight to maintain potency and effectiveness.",
+    q: "How do I choose the right product for my health concern?",
+    a: "You can explore products by category and wellness concern. Product descriptions provide detailed information to help you make an informed choice.",
+  },
+  {
+    q: "Where can I purchase Radhaayu Herbals products?",
+    a: "You can conveniently order our products directly through our website and have them delivered to your doorstep.",
   },
 ];
 
@@ -61,9 +69,8 @@ export default function FAQ() {
   return (
     <Section className="bg-gray-50">
       <SectionHeading
-        badge="faq"
-        title={"Frequently Asked "}
-        des="We believe in building lasting relationships with our patients, offering not just medications, but comprehensive health support that helps you live your best life."
+        title="Frequently Asked "
+        des="Find answers to the most common questions about our Ayurvedic products, ingredients, usage, and wellness approach."
         highlight="Questions"
         className="mb-14 md:text-xl text-center"
         titleClassName="text-4xl"

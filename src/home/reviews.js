@@ -7,32 +7,88 @@ import Image from "next/image";
 
 const reviews = [
   {
-    name: "Sarah Thompson",
-    role: "Project Manager",
-    body: "This AI product has transformed the way I manage my daily tasks. It's intuitive, fast, and incredibly accurate!",
-    img: "https://i.pravatar.cc/100?img=1",
+    name: "Amit Sharma",
+    role: "Delhi",
+    body: "I was looking for a natural solution for digestive discomfort and came across Radhayu. The formulation felt gentle and easy to include in my daily routine. Happy with the overall experience.",
   },
   {
-    name: "Michael Chen",
-    role: "Software Developer",
-    body: "I was skeptical at first, but this AI tool saved me hours of work. The automation features are a game-changer.",
-    img: "https://i.pravatar.cc/100?img=2",
+    name: "Neha Gupta",
+    role: "Gurugram",
+    body: "What I liked most about Radhayu is the focus on traditional Ayurvedic ingredients. The quality of the products and packaging gave me confidence from the very first purchase.",
   },
   {
-    name: "Emily Rodriguez",
-    role: "Data Analyst",
-    body: "The AI's ability to analyze data and provide insights is unmatched. It's like having a personal assistant 24/7.",
-    img: "https://i.pravatar.cc/100?img=3",
+    name: "Rahul Verma",
+    role: "Pune",
+    body: "The ordering process was smooth and the products arrived well packed. It's good to find an Ayurvedic brand that maintains both authenticity and quality.",
   },
   {
-    name: "David Patel",
-    role: "IT Consultant",
-    body: "I've never seen an AI product this user-friendly. It integrated seamlessly into my workflow from day one.",
-    img: "https://i.pravatar.cc/100?img=4",
+    name: "Priya Mehta",
+    role: "Ahmedabad",
+    body: "I've been trying to adopt a more natural wellness routine, and Radhayu products fit perfectly into that approach. The ingredients and formulations seem thoughtfully crafted.",
+  },
+  {
+    name: "Sandeep Arora",
+    role: "Chandigarh",
+    body: "The herbal formulations feel rooted in traditional Ayurveda. I appreciate the attention to quality and the clear information provided with the products.",
+  },
+  {
+    name: "Pooja Bansal",
+    role: "Jaipur",
+    body: "Radhayu has become one of my preferred wellness brands. The products are easy to use, and the overall experience has been consistently good.",
+  },
+  {
+    name: "Vikas Malhotra",
+    role: "Noida",
+    body: "I was specifically searching for Ayurvedic wellness products and found Radhayu through a recommendation. The quality exceeded my expectations.",
+  },
+  {
+    name: "Shreya Kapoor",
+    role: "Mumbai",
+    body: "The products feel premium and authentic. I appreciate the brand's focus on traditional herbal formulations rather than quick-fix solutions.",
+  },
+  {
+    name: "Karan Khanna",
+    role: "New Delhi",
+    body: "From placing the order to receiving the products, everything was handled professionally. The brand gives a trustworthy and reliable impression.",
+  },
+  {
+    name: "Anjali Singh",
+    role: "Lucknow",
+    body: "The combination of traditional Ayurvedic wisdom and modern packaging makes Radhayu stand out. Looking forward to exploring more products from the range.",
+  },
+  {
+    name: "Nitin Agarwal",
+    role: "Faridabad",
+    body: "I prefer wellness products that focus on natural ingredients, and Radhayu aligns perfectly with that philosophy. The quality and presentation are impressive.",
+  },
+  {
+    name: "Ritika Jain",
+    role: "Indore",
+    body: "The formulations feel carefully developed and the ingredients are clearly communicated. It's refreshing to see an Ayurvedic brand maintain such standards.",
+  },
+  {
+    name: "Manish Bhatia",
+    role: "Ghaziabad",
+    body: "After trying several wellness brands, I found Radhayu to be one of the most reliable in terms of product quality, packaging, and overall experience.",
+  },
+  {
+    name: "Sneha Arora",
+    role: "Mohali",
+    body: "I appreciate the brand's commitment to traditional Ayurvedic principles while presenting the products in a modern and professional manner.",
+  },
+  {
+    name: "Deepak Sharma",
+    role: "Jaipur",
+    body: "The products arrived on time and were exactly as described. The overall experience has been smooth and satisfactory.",
+  },
+  {
+    name: "Kavita Verma",
+    role: "Bhopal",
+    body: "Radhayu offers a good balance of authenticity, quality, and convenience. It has become a trusted part of my wellness routine.",
   },
 ];
 
-const ReviewCard = ({ img, name, role, body }) => {
+const ReviewCard = ({ name, role, body }) => {
   return (
     <figure
       className={cn(
@@ -42,7 +98,7 @@ const ReviewCard = ({ img, name, role, body }) => {
         "shadow-sm hover:shadow-md",
         "transition-all duration-300 ease-out",
         "hover:-translate-y-1",
-        "overflow-hidden group"
+        "overflow-hidden group",
       )}
     >
       {/* Quote icon */}
@@ -68,11 +124,11 @@ const ReviewCard = ({ img, name, role, body }) => {
 
         {/* User info */}
         <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
-          <img
+          {/* <img
             src={img}
             alt={name}
             className="h-10 w-10 rounded-full object-cover ring-1 ring-gray-200"
-          />
+          /> */}
           <div>
             <p className="text-sm font-semibold text-gray-900">{name}</p>
             <p className="text-xs text-emerald-600">{role}</p>
