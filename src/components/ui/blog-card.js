@@ -1,25 +1,43 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default function BlogCard({ title, excerpt, image, slug }) {
+export default function BlogCard({
+  title,
+  excerpt,
+  image,
+  slug,
+  category,
+  date,
+  readTime,
+}) {
   return (
-    <div className="  overflow-hidden  transition">
-      {/* Image */}
-      <div className="relative w-full h-60  rounded-lg overflow-hidden">
-        <Image src={image} alt={title} fill className="object-cover" />
-      </div>
+    <div className="group overflow-hidden">
+      <Link href={`/blog/${slug}`}>
+        <div className="relative h-60 w-full overflow-hidden rounded-xl">
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className="object-cover transition duration-300 group-hover:scale-105"
+          />
+        </div>
+      </Link>
 
-      {/* Content */}
-      <div className="py-5">
-        <h3 className="text-xl font-semibold mb-2 ">{title}</h3>
+      <div className="py-4">
+        <div className="mb-2 flex flex-wrap gap-2 text-xs text-gray-500">
+          <span>{category}</span>
+          <span>•</span>
+          <span>{date}</span>
+          <span>•</span>
+          <span>{readTime}</span>
+        </div>
 
-        <p className="text-gray-600 text-sm mb-4">{excerpt}</p>
+        <h3 className="mb-2 line-clamp-2 text-xl font-semibold">{title}</h3>
 
-        <Link
-          href={`/blog/${slug}`}
-          className="inline-block  decoration-0 font-medium hover:underline"
-        >
-          Read more →
+        <p className="mb-4 line-clamp-3 text-sm text-gray-600">{excerpt}</p>
+
+        <Link href={`/blog/${slug}`} className="font-medium hover:underline">
+          Read More →
         </Link>
       </div>
     </div>

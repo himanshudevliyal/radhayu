@@ -40,7 +40,6 @@ export default function VisionSection() {
       />
       <div className="   relative z-10">
         <SectionHeading
-          badge="About Radhaayu"
           title="Rooted in Ayurveda, "
           highlight="Committed to Wellness"
           des={

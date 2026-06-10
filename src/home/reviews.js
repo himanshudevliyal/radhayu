@@ -169,7 +169,6 @@ export default function Reviews() {
 
       <div className="relative mx-auto ">
         <SectionHeading
-          badge="Testimonials"
           title={"What Our Users "}
           des="Trusted by thousands of professionals worldwide who've transformed their workflow"
           highlight="Say"

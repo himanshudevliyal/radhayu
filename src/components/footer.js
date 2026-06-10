@@ -22,7 +22,7 @@ const products = [
     slug: "/products/radhayu-herbals-avipattikar-churna",
   },
   {
-    name: "Others",
+    name: "Others Products",
     slug: "/products",
   },
 ];
@@ -96,11 +96,11 @@ export default function Footer() {
           {/* Company */}
           <div className="col-span-2">
             <Image
-              src="/logo.png"
+              src="/footer-logo.png"
               alt="Radhayu Herbals"
               width={220}
               height={100}
-              className="mb-4"
+              className="mb-4 "
             />
 
             <p className="text-white/50 text-sm leading-relaxed">
@@ -203,7 +203,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="text-emerald-400 hover:text-emerald-300 transition-colors"
             >
-              Branding Waale
+              Brandingwaale Webtech
             </a>
           </p>
 

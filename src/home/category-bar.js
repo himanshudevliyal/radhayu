@@ -30,7 +30,6 @@ export default function CategoryBar() {
       />
 
       <SectionHeading
-        badge="Categories"
         title={"Shop by "}
         des={
           <>

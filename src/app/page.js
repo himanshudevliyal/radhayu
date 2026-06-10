@@ -21,7 +21,6 @@ export default function Home() {
       <FeaturesSection />
       <Section className="relative overflow-hidden px-4  bg-white">
         <SectionHeading
-          badge="Products"
           title={"Explore Our "}
           des={
             <>
@@ -34,7 +33,7 @@ export default function Home() {
           className="mb-14 md:text-xl text-center"
           titleClassName="text-4xl"
         />
-        <TrendingProducts></TrendingProducts>
+        <TrendingProducts />
       </Section>
       <AyurvedicSection />
       {/* <FeaturedProducts></FeaturedProducts> */}

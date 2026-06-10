@@ -59,7 +59,6 @@ export default function AyurvedicSection() {
         {/* Features Grid */}
 
         <SectionHeading
-          badge="Ayurveda"
           title={"Elevating the Power of  "}
           des={<>Crafted with purity, tradition, and holistic care</>}
           highlight=" Ayurveda "
