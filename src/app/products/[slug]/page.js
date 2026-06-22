@@ -1,9 +1,10 @@
 import Section from "@/components/layout/section";
 import ProductPage from "./_components/product-page";
+import RelativeProduct from "./_components/relative-products";
 async function getProduct(slug) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/products/get-by-slug/${slug}`,
-    { cache: "no-store" }
+    { cache: "no-store" },
   );
 
   if (!res.ok) return null;
@@ -14,6 +15,8 @@ async function getProduct(slug) {
 export default async function Product({ params }) {
   const { slug } = await params; // In Next.js 15, params is a Promise
   const product = await getProduct(slug);
+
+  console.log(product);
 
   // Handle product not found
   if (!product) {
@@ -33,6 +36,11 @@ export default async function Product({ params }) {
           Saara interactive logic client component mein hai.
         */}
         <ProductPage product={product} />
+      </Section>
+
+      <Section>
+        {" "}
+        <RelativeProduct categoryId={product.category_id}></RelativeProduct>
       </Section>
     </main>
   );

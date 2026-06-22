@@ -4,11 +4,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "n84j51mp-3001.inc1.devtunnels.ms",
+        hostname: "https://z34dr4pd-4001.inc1.devtunnels.ms",
       },
       {
         protocol: "https",
-        hostname: "n84j51mp-4001.inc1.devtunnels.ms",
+        hostname: "z34dr4pd-4001.inc1.devtunnels.ms",
       },
       {
         protocol: "https",
