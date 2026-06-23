@@ -268,7 +268,7 @@ export const blogs = [
     title: "Piles (Hemorrhoids): Causes, Symptoms and Ayurvedic Management",
     excerpt:
       "Understand piles from an Ayurvedic perspective — causes, symptoms, and natural lifestyle strategies to support digestive comfort.",
-    image: "/img/Blog3.png",
+    image: "/img/blog3.png",
     category: "Ayurvedic Care",
     readTime: "10 min read",
     date: "June 5, 2026",

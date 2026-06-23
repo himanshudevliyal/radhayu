@@ -16,8 +16,6 @@ export default async function Product({ params }) {
   const { slug } = await params; // In Next.js 15, params is a Promise
   const product = await getProduct(slug);
 
-  console.log(product);
-
   // Handle product not found
   if (!product) {
     return (
@@ -30,12 +28,10 @@ export default async function Product({ params }) {
   return (
     <main>
       <Section>
-     
         <ProductPage product={product} />
       </Section>
 
       <Section>
-      
         <RelativeProduct categoryId={product.category_id}></RelativeProduct>
       </Section>
     </main>

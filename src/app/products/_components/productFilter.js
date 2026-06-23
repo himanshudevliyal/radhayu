@@ -66,6 +66,7 @@ export default function ProductFilter() {
   const isAnyFilterActive = useMemo(() => {
     return !!categoriesQ || !!price_from || !!price_to;
   }, [categoriesQ, price_from, price_to]);
+
   return (
     <main className="container mx-auto px-4 py-6 md:py-8">
       <div className="grid gap-6 lg:grid-cols-12">
@@ -93,7 +94,11 @@ export default function ProductFilter() {
               <Menu />
             </SheetTrigger>
 
-            <SheetContent side="left" className="w-[90%]">
+            <SheetContent
+              SheetTitle="categories"
+              side="left"
+              className="w-[90%]"
+            >
               <SheetHeader>
                 <FilterSidebar
                   title="Filter Products"

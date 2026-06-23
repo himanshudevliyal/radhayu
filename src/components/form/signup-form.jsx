@@ -90,14 +90,14 @@ export default function SignupForm({ callback, isLoginDetails = true }) {
             password: formData.password,
             confirm_password: formData.confirmPassword,
           }),
-        }
+        },
       );
 
       const data = await response.json();
 
       // ❌ Backend error
       if (!response.ok) {
-        console.log("Backend Error 👉", data);
+        console.log("Backend Error ", data);
 
         // ✅ Toast
         if (data.message) {

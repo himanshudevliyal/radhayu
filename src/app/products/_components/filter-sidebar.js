@@ -16,11 +16,10 @@ export function FilterSidebar({
   onCategoriesChange,
   onClear,
   isAnyFiltterActive,
-  price = 20000, // ✅ single price value
+  price = 20000,
   range,
   setRange,
 }) {
-  // ✅ Local state for single price slider
   const [localPrice, setLocalPrice] = useState(price);
 
   const { price_from, price_to } = range;

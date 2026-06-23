@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { data } from "autoprefixer";
 const userSchema = z.object({
   fullname: z.string().min(2, "Full name must be at least 2 characters"),
   email: z.email("Invalid email address"),
@@ -28,14 +29,14 @@ const userSchema = z.object({
     .string()
     .regex(
       /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
-      "Invalid GST number"
+      "Invalid GST number",
     )
     .optional()
     .or(z.literal("")),
 });
 export function ProfileDetails({}) {
   const { user, setUser, isUserLoading } = useAuth();
-
+  console.log(user.mobile_number);
   const {
     register,
     handleSubmit,
@@ -45,7 +46,7 @@ export function ProfileDetails({}) {
     defaultValues: {
       fullname: user.fullname,
       email: user.email,
-      mobile_number: user.mobile_number,
+      mobile_number: +user.mobile_number,
       gstin: user.gstin,
     },
     resolver: zodResolver(userSchema),
@@ -53,6 +54,7 @@ export function ProfileDetails({}) {
 
   const updateMutation = useMutation({
     mutationFn: (data) => auth.updateProfile(user.id, data),
+
     onSuccess: (data) => {
       toast.success("Profile updated");
       setUser({
@@ -62,7 +64,6 @@ export function ProfileDetails({}) {
     },
     onError: (error) => {},
   });
-
   const onSubmit = (data) => {
     updateMutation.mutate({ ...data, gstin: data.gstin.toUpperCase() });
   };
@@ -70,7 +71,7 @@ export function ProfileDetails({}) {
   if (isUserLoading) return "Loading...";
 
   return (
-    <div className="space-y-0  lg:space-y-6 section">
+    <div className="space-y-0  lg:space-y-6 section py-5">
       {/* Header */}
       <div>
         <h2 className="text-3xl font-bold mb-2 text-green-900">
@@ -121,6 +122,7 @@ export function ProfileDetails({}) {
                 </label>
                 <input
                   type="text"
+                  readOnly
                   {...register("fullname")}
                   className="w-full rounded-lg border px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
@@ -139,6 +141,7 @@ export function ProfileDetails({}) {
                 <input
                   type="email"
                   {...register("email")}
+                  readOnly
                   className="w-full rounded-lg border px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
                 {errors.email && (
@@ -154,6 +157,7 @@ export function ProfileDetails({}) {
                 <input
                   type="number"
                   {...register("mobile_number")}
+                  readOnly
                   className="w-full rounded-lg border px-4 py-2 text-green-800 focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
                 {errors.mobile_number && (
@@ -162,7 +166,7 @@ export function ProfileDetails({}) {
                   </p>
                 )}
               </div>
-              <div>
+              {/* <div>
                 <label className="text-sm text-muted-foreground flex items-center gap-1">
                   <BadgePoundSterling className="h-4 w-4" /> GST Number
                 </label>
@@ -170,21 +174,22 @@ export function ProfileDetails({}) {
                 <input
                   type="text"
                   {...register("gstin")}
+                  readOnly
                   className="w-full rounded-lg border px-4 py-2"
                 />
 
                 {errors.gstin && (
                   <p className="text-sm text-red-500">{errors.gstin.message}</p>
                 )}
-              </div>
-              <div className="col-span-full">
+              </div> */}
+              {/* <div className="col-span-full">
                 <Button disabled={!isDirty || updateMutation.isPending}>
                   {updateMutation.isPending && (
                     <Loader2 className="animate-spin" />
                   )}
                   Submit
                 </Button>
-              </div>
+              </div> */}
             </form>
           </CardContent>
         </div>

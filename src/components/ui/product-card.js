@@ -4,8 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import config from "@/config";
+import { cn } from "@/lib/utils";
 
 export default function ProductCards({ product }) {
+  const isMultiImage = product.pictures?.length > 1;
+
   return (
     <div className="group rounded-3xl border p-2 transition-all duration-500 hover:-translate-y-2">
       {/* Image Section */}
@@ -16,10 +19,13 @@ export default function ProductCards({ product }) {
             height={500}
             src={`${config.file_base}${product.pictures?.[0]}`}
             alt={product.title}
-            className="h-[280px] w-full object-contain transition-all duration-500 group-hover:opacity-0"
+            className={cn(
+              `h-[280px] w-full object-contain transition-all duration-500 `,
+              isMultiImage && "group-hover:opacity-0",
+            )}
           />
 
-          {product.pictures?.[1] && (
+          {isMultiImage && (
             <Image
               width={500}
               height={500}
