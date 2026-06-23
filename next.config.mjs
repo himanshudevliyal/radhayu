@@ -12,7 +12,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "radhayuapi.bwdemo.in",
+        hostname: "api.radhayuherbals.com",
       },
 
       {

@@ -1,76 +1,80 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import Image from "next/image";
+import React from "react";
+import Section from "@/components/layout/section";
+import { SectionHeading } from "@/components/layout/heading";
 import { useQuery } from "@tanstack/react-query";
-import ProductCards from "@/components/ui/product-card";
 import http from "@/utils/http";
 import { endpoints } from "@/utils/endpoints";
+import Link from "next/link";
+// ✅ removed wrong `data` import from autoprefixer
 
-export default function CategoryProductSection() {
-  const [activeCategory, setActiveCategory] = useState(null);
-
-  // ---------------- CATEGORIES ----------------
-  const { data: categories = [], isLoading: catLoading } = useQuery({
+export default function CategoryBar() {
+  const { data: categories, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const { data } = await http().get(endpoints.categories.getAll);
-      return data?.categories ?? [];
+      const { data } = await http().get(`${endpoints.categories.getAll}`);
+      return data?.categories;
     },
   });
-
-  // ---------------- PRODUCTS ----------------
-  const { data: products = [], isLoading: productLoading } = useQuery({
-    queryKey: ["products"],
-    queryFn: async () => {
-      const { data } = await http().get(endpoints.products.getAll);
-      return data?.products ?? [];
-    },
-  });
-
-  useEffect(() => {
-    if (categories.length && !activeCategory) {
-      setActiveCategory(categories[0].id);
-    }
-  }, [categories, activeCategory]);
-
-  if (catLoading || productLoading) return <p>Loading...</p>;
-
-  // filter products by category
-  const filteredProducts = products.filter(
-    (item) => item.category_id === activeCategory,
-  );
 
   return (
-    <div className="flex gap-4">
-      {/* LEFT SIDE - CATEGORIES */}
-      <div className="w-1/4 border-r">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setActiveCategory(cat.id)}
-            className={`w-full text-left p-3 border-b transition ${
-              activeCategory === cat.id
-                ? "bg-black text-white"
-                : "bg-white hover:bg-gray-100"
-            }`}
-          >
-            {cat.name}
-          </button>
-        ))}
-      </div>
+    <Section className="relative">
+      <Image
+        src="/img/bg-3.jpg"
+        alt="Leaf Background"
+        width={300}
+        height={500}
+        className="absolute right-0 -z-1 h-full w-full bottom-0 opacity-70 pointer-events-none"
+      />
 
-      {/* RIGHT SIDE - PRODUCTS */}
-      <div className="w-3/4">
-        {filteredProducts.length === 0 ? (
-          <p>No products found</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredProducts.map((product) => (
-              <ProductCards key={product.id} product={product} />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+      <SectionHeading
+        title={"Shop by "}
+        des={
+          <>
+            Explore our range of Ayurvedic wellness solutions crafted with
+            traditional herbal <br></br> wisdom to support your everyday health
+            and well-being.
+          </>
+        }
+        highlight=" Category
+"
+        className="mb-14 md:text-xl text-center"
+        titleClassName="text-4xl"
+      />
+
+      {isLoading ? (
+        <p className="text-center">Loading categories...</p>
+      ) : (
+        <div className="flex gap-10 py-4 overflow-x-auto scrollbar-hide justify-center mb-5">
+          {categories?.map((cat) => (
+            <Link
+              href={`products?category=${cat.id}`}
+              key={cat.id}
+              className="group min-w-[96px] items-center"
+            >
+              <div
+                className="rounded-[100px] overflow-hidden bg-gray-100
+                shadow-sm transition-all duration-300
+                group-hover:shadow-md w-[200px]"
+              >
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_FILE_BASE}${cat.pictures?.[0]}`}
+                  alt={cat.title}
+                  width={500}
+                  height={500}
+                  className="h-[300px] object-cover transition-all duration-300 group-hover:scale-105"
+                />
+              </div>
+
+              <p className="mt-2 text-xl  italic font-bold text-gray-700 text-center group-hover:text-gray-900">
+                {cat.title}
+              </p>
+            </Link>
+          ))}
+        </div>
+      )}
+    </Section>
   );
 }

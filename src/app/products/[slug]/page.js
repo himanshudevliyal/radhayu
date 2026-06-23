@@ -30,16 +30,12 @@ export default async function Product({ params }) {
   return (
     <main>
       <Section>
-        {/*
-          ✅ Server Component sirf data fetch karta hai aur
-          ProductPageClient ko prop ke roop mein pass karta hai.
-          Saara interactive logic client component mein hai.
-        */}
+     
         <ProductPage product={product} />
       </Section>
 
       <Section>
-        {" "}
+      
         <RelativeProduct categoryId={product.category_id}></RelativeProduct>
       </Section>
     </main>
