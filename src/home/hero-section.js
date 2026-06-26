@@ -1,63 +1,97 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, Component } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import Link from "next/link";
 
-const heroImages = [
-  "/img/banner.png",
-  "/img/banner2.png",
-  "/img/banner3.png",
-  "/img/banner.png",
-  "/img/banner2.png",
-  "/img/banner3.png",
+const slides = [
+  {
+    src: "/img/banner.png",
+    alt: "Natural Ayurvedic Products – Free Shipping Above Rs1000",
+  },
+  {
+    src: "/img/banner2.png",
+    alt: "Boost Immunity with Herbal Ayurvedic Supplements",
+  },
+  { src: "/img/banner3.png", alt: "Trusted Ayurvedic Brands – Shop Now" },
 ];
 
-const HeroSection = () => {
-  const [carouselError, setCarouselError] = useState(false);
+/* ── Fallback: SSR + carousel error dono ke liye ── */
+function FallbackBanner() {
+  return (
+    <section aria-label="Hero Banner">
+      <Link href="/products">
+        <div className="relative w-full aspect-[21/9] min-h-[200px]">
+          <Image
+            src={slides[0].src}
+            alt={slides[0].alt}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        </div>
+      </Link>
+    </section>
+  );
+}
 
-  // Fallback Image
-  if (carouselError) {
-    return (
-      <section className="relative w-full ">
-        <Image
-          src="/img/banner.png"
-          alt="Rapid Consulting Business Consultancy Services"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-      </section>
-    );
+/* ── React Error Boundary (class component — React requirement) ── */
+class ErrorBoundary extends Component {
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
   }
+  componentDidCatch() {
+    this.props.onError?.();
+  }
+  render() {
+    return this.state.hasError ? null : this.props.children;
+  }
+}
 
-  try {
-    return (
-      <section className=" w-full h-screen" aria-label="Hero Banner">
+/* ── Main HeroSection ── */
+export default function HeroSection() {
+  const [mounted, setMounted] = useState(false);
+  const [carouselFailed, setFailed] = useState(false);
+  const autoplay = useRef(Autoplay({ delay: 4000, stopOnInteraction: false }));
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || carouselFailed) return <FallbackBanner />;
+
+  return (
+    <section aria-label="Hero Banner">
+      <h1 className="sr-only">
+        Natural &amp; Herbal Ayurvedic Products – Free Shipping Above Rs1000
+      </h1>
+
+      <ErrorBoundary onError={() => setFailed(true)}>
         <Carousel
-          className="w-full h-full"
+          className="w-full"
           opts={{ loop: true }}
-          plugins={[Autoplay({ delay: 4000 })]}
+          plugins={[autoplay.current]}
         >
           <CarouselContent className="-ml-0">
-            {heroImages.map((src, index) => (
+            {slides.map((slide, index) => (
               <CarouselItem key={index} className="pl-0 basis-full">
                 <Link href="/products">
-                  <div className="relative w-full h-screen">
+                  <div className="relative w-full aspect-[21/9] min-h-[200px]">
                     <Image
-                      src={src}
-                      alt={`Banner ${index + 1}`}
-                      width={600}
-                      height={600}
+                      src={slide.src}
+                      alt={slide.alt}
+                      fill
                       priority={index === 0}
-                      className="object-cover w-full"
+                      sizes="100vw"
+                      className="object-cover object-center"
                     />
                   </div>
                 </Link>
@@ -65,12 +99,7 @@ const HeroSection = () => {
             ))}
           </CarouselContent>
         </Carousel>
-      </section>
-    );
-  } catch (error) {
-    setCarouselError(true);
-    return null;
-  }
-};
-
-export default HeroSection;
+      </ErrorBoundary>
+    </section>
+  );
+}

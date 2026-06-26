@@ -6,6 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { Toast } from "radix-ui";
 
 // Zod Schema
 const contactSchema = z.object({
@@ -34,29 +35,35 @@ export default function ContactForm() {
     setSuccess("");
 
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/queries`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        },
+      );
 
-      const result = await res.json();
+      const result = await response.json();
 
-      if (res.ok) {
-        setSuccess("Message sent successfully!");
+      if (response.ok) {
+        setSuccess(result.message || "Message sent successfully!");
         reset();
       } else {
-        alert(result.message);
+        Toast(result.message || "Failed to submit enquiry");
       }
     } catch (error) {
-      alert("Something went wrong");
+      console.error("API Error:", error);
+      Toast("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Name + Phone */}
       <div className="grid md:grid-cols-2 gap-6">
         <div className="flex flex-col space-y-2">
@@ -64,7 +71,7 @@ export default function ContactForm() {
           <Input
             {...register("name")}
             placeholder="Enter your name"
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent transition"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent"
           />
           {errors.name && (
             <p className="text-red-500 text-sm">{errors.name.message}</p>
@@ -75,8 +82,8 @@ export default function ContactForm() {
           <Label className="text-sm font-medium text-gray-600">Phone</Label>
           <Input
             {...register("phone")}
-            placeholder="Enter your phone"
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent transition"
+            placeholder="Enter your phone number"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent"
           />
           {errors.phone && (
             <p className="text-red-500 text-sm">{errors.phone.message}</p>
@@ -89,9 +96,10 @@ export default function ContactForm() {
         <div className="flex flex-col space-y-2">
           <Label className="text-sm font-medium text-gray-600">Email</Label>
           <Input
+            type="email"
             {...register("email")}
             placeholder="Enter your email"
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent transition"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent"
           />
           {errors.email && (
             <p className="text-red-500 text-sm">{errors.email.message}</p>
@@ -102,8 +110,8 @@ export default function ContactForm() {
           <Label className="text-sm font-medium text-gray-600">Subject</Label>
           <Input
             {...register("subject")}
-            placeholder="Write subject"
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent transition"
+            placeholder="Enter subject"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent"
           />
           {errors.subject && (
             <p className="text-red-500 text-sm">{errors.subject.message}</p>
@@ -116,30 +124,35 @@ export default function ContactForm() {
         <Label className="text-sm font-medium text-gray-600">Message</Label>
         <textarea
           {...register("message")}
-          placeholder="Write your message..."
           rows={5}
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent transition resize-none"
+          placeholder="Write your message..."
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent resize-none"
         />
         {errors.message && (
           <p className="text-red-500 text-sm">{errors.message.message}</p>
         )}
       </div>
 
-      {/* Button */}
-      <div className="pt-2">
+      {/* Submit Button */}
+      <div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full md:w-auto px-8 py-3 rounded-full bg-green-800 text-white font-medium tracking-wide hover:bg-green-900 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full md:w-auto px-8 py-3 rounded-full bg-green-800 text-white font-medium hover:bg-green-900 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          {loading ? "Sending..." : "Send Message"}
+          {loading ? (
+            <>
+              <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              Sending...
+            </>
+          ) : (
+            "Send Message"
+          )}
         </button>
       </div>
 
-      {/* Success */}
-      {success && (
-        <p className="text-green-700 font-medium text-center">{success}</p>
-      )}
+      {/* Success Message */}
+      {success && <p className="text-green-700 font-medium">{success}</p>}
     </form>
   );
 }

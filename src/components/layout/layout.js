@@ -16,7 +16,6 @@ export default function Layout({ children }) {
     <AuthProvider>
       <RoleContext>
         <Navbar></Navbar>
-
         {children}
         <CartSidebar></CartSidebar>
         <Footer></Footer>

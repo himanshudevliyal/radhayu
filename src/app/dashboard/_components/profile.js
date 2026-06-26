@@ -36,7 +36,6 @@ const userSchema = z.object({
 });
 export function ProfileDetails({}) {
   const { user, setUser, isUserLoading } = useAuth();
-  console.log(user.mobile_number);
   const {
     register,
     handleSubmit,
