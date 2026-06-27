@@ -146,7 +146,7 @@ const Navbar = () => {
                 width={200}
                 height={200}
                 priority
-                className="object-contain w-[90px] md:w-[70px] scale-[1.3]"
+                className="object-contain w-[90px] md:w-[90px] scale-[1.3]"
                 alt="Brand logo"
               />
             </Link>
