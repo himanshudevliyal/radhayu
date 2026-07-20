@@ -38,7 +38,9 @@ export default function Breadcrumb({ current, bgImage }) {
 
       {/* Content */}
       <div className="relative z-10 text-center text-white space-y-4">
-        <h1 className="text-5xl md:text-6xl font-serif">{current}</h1>
+        <h1 className="text-5xl md:text-6xl font-serif  capitalize">
+          {current}
+        </h1>
 
         <nav className="flex items-center justify-center gap-2 text-sm uppercase tracking-widest">
           <Link href="/" className="text-gray-300 hover:text-white transition">
