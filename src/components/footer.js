@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Send, Heart, Leaf, Phone, Mail, MapPin } from "lucide-react";
+import { Send, Leaf, Phone, Mail, MapPin, ArrowRight } from "lucide-react";
 
 const products = [
   {
@@ -28,38 +28,47 @@ const products = [
 ];
 
 const quickLinks = [
+  { name: "About Us", href: "/about" },
+  { name: "Products", href: "/products" },
+  { name: "Blog", href: "/blog" },
+  { name: "Contact Us", href: "/contact-us" },
+];
+
+const legalLinks = [
+  { name: "Privacy Policy", href: "/privacy-policy" },
+  { name: "Terms & Conditions", href: "/terms-and-conditions" },
+  { name: "Shipping Policy", href: "/shipping-policy" },
   {
-    name: "About Us",
-    href: "/about-us",
+    name: "Return, Refund & Exchange",
+    href: "/return-refund-and-exchange-policy",
   },
-  {
-    name: "Products",
-    href: "/products",
-  },
-  {
-    name: "Blog",
-    href: "/blog",
-  },
-  {
-    name: "Contact Us",
-    href: "/contact-us",
-  },
+  { name: "Cancellation Policy", href: "/cancellation-policy" },
+  { name: "Medical Disclaimer", href: "/medical-disclaimer" },
+  // { name: "Sitemap", href: "/sitemap.xml" },
 ];
 
 function FooterLink({ href, children }) {
   return (
     <a
       href={href}
-      className="group flex items-center gap-2 py-2 border-b border-white/5 last:border-0 transition-all duration-200"
+      className="group flex items-center gap-2 py-2 border-b border-white/5 last:border-0"
     >
-      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/5 text-[10px] text-white/40 group-hover:bg-emerald-500/20 group-hover:text-emerald-300">
+      <span className="flex h-5 w-5 flex-none items-center justify-center rounded-full bg-white/5 text-[10px] text-white/40 transition-colors group-hover:bg-emerald-500/20 group-hover:text-emerald-300">
         ›
       </span>
-
-      <span className="text-[13px] text-white/50 group-hover:text-emerald-300">
+      <span className="text-[13px] text-white/50 transition-colors group-hover:text-emerald-300">
         {children}
       </span>
     </a>
+  );
+}
+
+function FooterHeading({ children }) {
+  return (
+    <div className="mb-5">
+      <h3 className="text-lg font-semibold text-white">{children}</h3>
+      <div className="mt-3 h-0.5 w-8 bg-emerald-500" />
+    </div>
   );
 }
 
@@ -67,7 +76,8 @@ export default function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubscribe = () => {
+  const handleSubscribe = (e) => {
+    e.preventDefault();
     if (!email.trim()) return;
 
     setSubscribed(true);
@@ -80,30 +90,31 @@ export default function Footer() {
 
   return (
     <footer className="relative overflow-hidden bg-gradient-to-br from-[#071f17] via-[#0b3b2e] to-[#0d4a38] text-white">
-      {/* Background Texture */}
+      {/* Background texture */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        className="pointer-events-none absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage:
             "radial-gradient(circle, white 1px, transparent 1px)",
           backgroundSize: "24px 24px",
         }}
       />
+      {/* Ambient glow */}
+      <div className="pointer-events-none absolute -top-32 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-emerald-500/10 blur-3xl" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-16">
-        {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-10">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+        {/* Main grid */}
+        <div className="grid grid-cols-1 gap-10 py-12 md:grid-cols-2 xl:grid-cols-4">
           {/* Company */}
-          <div className="col-span-2">
+          <div>
             <Image
               src="/footer-logo.png"
               alt="Radhayu Herbals"
-              width={220}
-              height={100}
-              className="mb-4 "
+              width={200}
+              height={90}
+              className="mb-4"
             />
-
-            <p className="text-white/50 text-sm leading-relaxed">
+            <p className="text-sm leading-relaxed text-white/50">
               For generations, Ayurveda has guided people towards healthier and
               more balanced living. At Radhayu Herbals, we combine traditional
               Ayurvedic wisdom with carefully selected natural ingredients to
@@ -114,10 +125,7 @@ export default function Footer() {
 
           {/* Products */}
           <div>
-            <h3 className="text-xl font-semibold mb-3">Products</h3>
-
-            <div className="w-8 h-0.5 bg-emerald-500 mb-5"></div>
-
+            <FooterHeading>Products</FooterHeading>
             <nav>
               {products.map((product) => (
                 <FooterLink key={product.slug} href={product.slug}>
@@ -129,10 +137,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-xl font-semibold mb-3">Quick Links</h3>
-
-            <div className="w-8 h-0.5 bg-emerald-500 mb-5"></div>
-
+            <FooterHeading>Quick Links</FooterHeading>
             <nav>
               {quickLinks.map((link) => (
                 <FooterLink key={link.href} href={link.href}>
@@ -144,91 +149,79 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-xl font-semibold mb-3">Contact Us</h3>
-
-            <div className="w-8 h-0.5 bg-emerald-500 mb-5"></div>
-
+            <FooterHeading>Contact Us</FooterHeading>
             <div className="space-y-5 text-sm">
               <div className="flex gap-3">
-                <MapPin size={18} className="text-emerald-400 mt-1 shrink-0" />
-                <p className="text-white/60 leading-relaxed">
+                <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-emerald-500/10">
+                  <MapPin size={16} className="text-emerald-400" />
+                </span>
+                <p className="pt-1.5 leading-relaxed text-white/60">
                   DPT 808B, F79 & 80, DLF Prime Tower, Industrial Area, Okhla
                   Phase-1, New Delhi - 110020
                 </p>
               </div>
 
-              <div className="flex gap-3 items-center">
-                <Phone size={18} className="text-emerald-400 shrink-0" />
-
-                <a
-                  href="tel:+919711975094"
-                  className="text-white/60 hover:text-emerald-300"
-                >
+              <a
+                href="tel:+919711975094"
+                className="group flex items-center gap-3"
+              >
+                <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-emerald-500/10">
+                  <Phone size={16} className="text-emerald-400" />
+                </span>
+                <span className="text-white/60 transition-colors group-hover:text-emerald-300">
                   +91 97119 75094
-                </a>
-              </div>
+                </span>
+              </a>
 
-              <div className="flex gap-3 items-center">
-                <Mail size={18} className="text-emerald-400 shrink-0" />
-
-                <a
-                  href="mailto:radhayuherbals@gmail.com"
-                  className="text-white/60 hover:text-emerald-300"
-                >
+              <a
+                href="mailto:radhayuherbals@gmail.com"
+                className="group flex items-center gap-3"
+              >
+                <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-emerald-500/10">
+                  <Mail size={16} className="text-emerald-400" />
+                </span>
+                <span className="text-white/60 transition-colors group-hover:text-emerald-300">
                   radhayuherbals@gmail.com
-                </a>
-              </div>
+                </span>
+              </a>
             </div>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="mt-12 flex items-center gap-4">
-          <div className="h-px flex-1 bg-white/10"></div>
+        <div className="flex items-center gap-4">
+          <div className="h-px flex-1 bg-white/10" />
           <Leaf size={16} className="text-emerald-500" />
-          <div className="h-px flex-1 bg-white/10"></div>
+          <div className="h-px flex-1 bg-white/10" />
         </div>
 
-        {/* Bottom */}
-        <div className="pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        {/* Legal links */}
+        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 py-6 text-center">
+          {legalLinks.map((link, i) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="text-xs text-white/40 transition-colors hover:text-emerald-300"
+            >
+              {link.name}
+            </a>
+          ))}
+        </div>
+
+        {/* Bottom bar */}
+        <div className="border-t border-white/10 py-6 text-center">
           <p className="text-xs text-white/40">
             © {new Date().getFullYear()} Radhayu Herbals. All Rights Reserved.
-          </p>
-
-          <p className="text-xs text-white/40">
             Designed & Developed by{" "}
             <a
               href="https://brandingwaale.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-emerald-400 hover:text-emerald-300 transition-colors"
+              className="text-emerald-400 transition-colors hover:text-emerald-300"
             >
               Brandingwaale Webtech
             </a>
           </p>
-
-          <div className="flex gap-5">
-            <a
-              href="/privacy-policy"
-              className="text-xs text-white/40 hover:text-white"
-            >
-              Privacy Policy
-            </a>
-
-            <a
-              href="/terms-and-conditions"
-              className="text-xs text-white/40 hover:text-white"
-            >
-              Terms & Conditions
-            </a>
-
-            <a
-              href="/sitemap.xml"
-              className="text-xs text-white/40 hover:text-white"
-            >
-              Sitemap
-            </a>
-          </div>
         </div>
       </div>
     </footer>

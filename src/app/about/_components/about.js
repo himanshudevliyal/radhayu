@@ -57,7 +57,7 @@ export default function AboutSection() {
             {/* FEATURES */}
             <div className="space-y-6">
               <div className="flex gap-4">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary  shrink-0">
                   ✓
                 </span>
                 <div>
@@ -73,7 +73,7 @@ export default function AboutSection() {
               </div>
 
               <div className="flex gap-4">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary">
+                <span className="flex items-center justify-center w-7 h-7 shrink-0 rounded-full border border-primary text-primary">
                   ✓
                 </span>
                 <div>
@@ -89,7 +89,7 @@ export default function AboutSection() {
               </div>
 
               <div className="flex gap-4">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary">
+                <span className="flex items-center shrink-0 justify-center w-7 h-7 rounded-full border border-primary text-primary">
                   ✓
                 </span>
                 <div>
@@ -105,7 +105,7 @@ export default function AboutSection() {
               </div>
 
               <div className="flex gap-4">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary">
+                <span className="flex items-center shrink-0 justify-center w-7 h-7 rounded-full border border-primary text-primary">
                   ✓
                 </span>
                 <div>
