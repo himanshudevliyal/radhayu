@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "https://z34dr4pd-4001.inc1.devtunnels.ms",
+        hostname: "t7gx1q7p-3001.inc1.devtunnels.ms",
       },
       {
         protocol: "https",

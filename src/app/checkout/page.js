@@ -115,10 +115,10 @@ export default function CheckoutPage() {
                 {
                   onSuccess: resolve,
                   onError: reject,
-                }
+                },
               );
-            })
-        )
+            }),
+        ),
       );
 
       // Now refetch fresh data from server
@@ -137,7 +137,7 @@ export default function CheckoutPage() {
   const { register, handleSubmit, formState, setValue } = useForm({
     mode: "onChange",
     resolver: zodResolver(
-      createOrderSchema.pick({ shipping_address: user ? true : false })
+      createOrderSchema.pick({ shipping_address: user ? true : false }),
     ),
     defaultValues: {
       shipping_address: {
@@ -426,7 +426,7 @@ export default function CheckoutPage() {
                 setUseSameAddress(checked);
                 if (checked && selectedAddressId) {
                   const shippingAddr = addressData.addresses.find(
-                    (a) => a.id === selectedAddressId
+                    (a) => a.id === selectedAddressId,
                   );
                   if (shippingAddr) {
                     setSelectedBillingAddressId(selectedAddressId);
@@ -589,7 +589,7 @@ export default function CheckoutPage() {
 
                   <div className="mt-6">
                     <Button type="submit" disabled={!isValid && !user}>
-                      Place Order
+                      Cash on Delivery
                     </Button>
                   </div>
                 </div>

@@ -45,8 +45,7 @@ export default function LoginForm({ callback, isSignUpDetails = true }) {
       callback?.(resp.data?.user_data);
       return resp.data;
     } catch (err) {
-      setError("Invalid credentials");
-      setIsLoading(false);
+      setError(err.response?.data?.message || "Invalid credentials");
     } finally {
       setIsLoading(false);
     }
