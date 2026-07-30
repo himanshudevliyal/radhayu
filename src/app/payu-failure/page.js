@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { XCircle } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Outline } from "react-pdf";
 
 export default function PayUFailed() {
   return (
@@ -63,7 +62,7 @@ export default function PayUFailed() {
             </Link>
             <Link href="/contact">
               <Button
-                variant={Outline}
+                variant={"outline"}
                 className="w-full sm:w-auto border-2 border-rose-500 text-red-500"
               >
                 Contact Support
