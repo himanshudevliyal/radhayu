@@ -27,7 +27,7 @@ export const addToLocalCart = (product, quantity = 1) => {
     (item) =>
       item.id === product.id &&
       item.slug === product.slug &&
-      item.product_variant_id === product.product_variant_id
+      item.product_variant_id === product.product_variant_id,
   );
 
   if (existingItem) {
@@ -48,20 +48,25 @@ export const useAddToCart = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: addToCart,
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries(["cart"]);
       queryClient.invalidateQueries(["cart-items"]);
-      dispatch(toggleCart());
+
+      if (variables?.openCart) {
+        dispatch(toggleCart());
+      }
+
       toast.success("Added to cart!");
     },
     onError: handleError,
   });
 
-  const add = ({ product, quantity = 1 }) => {
+  const add = ({ product, quantity = 1, openCart = true }) => {
     if (user) {
       const cartData = {
         product_variant_id: product.variant_id,
         quantity: quantity,
+        openCart,
       };
 
       mutate(cartData);
@@ -80,7 +85,9 @@ export const useAddToCart = () => {
 
       const updatedCart = addToLocalCart(localProduct, quantity);
       dispatch(setCartItems(updatedCart));
-      dispatch(toggleCart());
+      if (openCart) {
+        dispatch(toggleCart());
+      }
       toast.success("Added to cart!");
     }
   };

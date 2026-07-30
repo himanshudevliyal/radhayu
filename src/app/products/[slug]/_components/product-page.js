@@ -72,10 +72,10 @@ export default function ProductPage({ product }) {
     router.push(`?${next.toString()}`, { scroll: false });
   }
 
-  const handleAdd = (redirectToCheckout = false, quantity = 1) => {
+  const handleAdd = async (redirectToCheckout = false, quantity = 1) => {
     if (!selectedVariant) return;
 
-    addToCart({
+    await addToCart({
       product: {
         id: product.id,
         slug: product.slug,
@@ -87,8 +87,9 @@ export default function ProductPage({ product }) {
         pictures: selectedVariant.pictures,
       },
       quantity,
-      redirectToCheckout,
+      openCart: !redirectToCheckout, // Add to Cart => true, Buy Now => false
     });
+
     if (redirectToCheckout) {
       router.push("/checkout");
     }

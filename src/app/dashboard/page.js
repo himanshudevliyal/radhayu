@@ -48,7 +48,7 @@ export default function DashboardPage() {
 
   return (
     <div className="">
-      <div className="lg:flex flex-wrap bg-blue-50  gap-4 pt-5 px-4 lg:px-0">
+      <div className="lg:flex flex-wrap bg-blue-50  gap-4 py-5 px-4 lg:px-0">
         <UserSidebar
           user={user}
           activeSection={activeSection}
