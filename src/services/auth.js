@@ -1,4 +1,6 @@
 import config from "@/config";
+import { endpoints } from "@/utils/endpoints";
+import http from "@/utils/http";
 import axios from "axios";
 
 const login = async (data) => {
@@ -52,6 +54,10 @@ const resetPassword = async (data) => {
   });
 };
 
+const updateProfile = async (id, item) => {
+  return await http().put(`${endpoints.users.getAll}/${id}`, item);
+};
+
 const auth = {
   login: login,
   loginRequest: loginRequest,
@@ -60,6 +66,7 @@ const auth = {
   registerVerify: registerVerify,
   forgotPassword: forgotPassword,
   resetPassword: resetPassword,
+  updateProfile: updateProfile,
 };
 
 export default auth;

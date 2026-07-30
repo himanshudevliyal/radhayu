@@ -18,4 +18,5 @@ export const endpoints = {
   categories: { getAll: "/categories" },
   products: { getAll: "/products" },
   stories: { getAll: "/stories" },
+  users: { getAll: "/users" },
 };

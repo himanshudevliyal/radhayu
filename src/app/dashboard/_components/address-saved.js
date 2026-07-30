@@ -256,7 +256,10 @@ export default function Addresses() {
           <AddressForm
             type="edit"
             id={editAddressId}
-            callback={() => setEditAddressId(null)}
+            callback={() => {
+              setEditAddressId(null);
+              setIsAddressModal(false);
+            }}
           />
         </DialogContent>
       </Dialog>

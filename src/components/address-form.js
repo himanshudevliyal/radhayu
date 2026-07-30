@@ -4,17 +4,23 @@ import { useForm } from "react-hook-form";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { postAddress } from "@/services/address-services";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { postAddress, updateAddress } from "@/services/address-services";
 import { handleError } from "@/lib/handle-error-toast";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import Loader from "./loader";
+import { useEffect } from "react";
+import { useOrder } from "@/hooks/use-orders";
+import http from "@/utils/http";
+import { endpoints } from "@/utils/endpoints";
 
-export default function AddressForm() {
+export default function AddressForm({ type, id, callback }) {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     defaultValues: {
       address: {
@@ -42,20 +48,46 @@ export default function AddressForm() {
       handleError(error);
     },
   });
+  const updateMutation = useMutation({
+    mutationFn: (data) => updateAddress(id, data),
+    onSuccess: () => {
+      toast.success("Address updated successfully!");
+      queryClient.invalidateQueries(["addresses"]);
+      reset();
+      callback?.();
+    },
+    onError: (err) => {
+      toast.error(err?.message || "Failed to update address");
+    },
+  });
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryFn: async () => {
+      const { data } = await http().get(`${endpoints.addresses.getAll}/${id}`);
+      return data;
+    },
+    queryKey: ["addresses", id],
+    enabled: !!id,
+  });
 
   const onSubmit = (data) => {
-    createMutation.mutate(data);
+    type === "create"
+      ? createMutation.mutate(data)
+      : updateMutation.mutate(data);
   };
+
+  useEffect(() => {
+    if (!data) return;
+    console.log({ data });
+    reset({ ...data });
+  }, [data, reset]);
+
+  if (type === "edit" && isLoading) return <Loader />;
+  if (type === "edit" && isError) return "Something went wrong.";
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Card className="rounded-xl border-none py-5">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-2xl font-bold text-gray-800">
-            Add Address
-          </CardTitle>
-        </CardHeader>
-
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* House Number */}

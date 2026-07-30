@@ -2,142 +2,83 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useMemo, use } from "react";
+
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { CreditCard, Wallet, MapPin, Plus, Banknote } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/providers/auth-provider";
 import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createOrder } from "@/services/order-services";
 import { toast } from "sonner";
 import { handleError } from "@/lib/handle-error-toast";
-import Image from "next/image";
-import { getLocalCart } from "@/hooks/useAddToCart";
-import { addToCart, getCartItems } from "@/services/cart-services";
-import { getAddresses } from "@/services/address-services";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import Loader from "@/components/loader";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import { getAddresses } from "@/services/address-services";
+import Loader from "@/components/loader";
+import { getCartItems } from "@/services/cart-services";
 import AddressForm from "@/components/address-form";
-import CheckoutLoginModal from "./_componets/checkout-login-modal";
-import SignupForm from "@/components/form/signup-form";
+import config from "@/config";
 
-const addressSchema = z.object({
+export const addressSchema = z.object({
   fullname: z.string().min(1, "fullname is required"),
   street: z.string().min(1, "Street is required"),
-  house: z.string().min(1, "House number is required"),
+  house: z.string().min(1, "House Number is required"),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),
-  postal_code: z.string().min(6, "Postal code is required"),
-  phone: z.string().min(10).optional(),
+  postal_code: z.string().min(3, "Postal code is required"),
+  phone: z.string().min(6).optional(),
 });
 
-const createOrderSchema = z.object({
+export const orderItemSchema = z.object({
+  item_type: z.enum(["book", "product"]),
+  item_id: z.string().uuid({ message: "Invalid item_id" }),
+  product_variant_id: z.string().uuid().optional(),
+  quantity: z.number().int().positive({ message: "Quantity must be > 0" }),
+});
+
+export const createOrderSchema = z.object({
   shipping_address: addressSchema,
   billing_address: addressSchema,
+  order_items: z
+    .array(orderItemSchema)
+    .min(1, "order_items must contain at least one item"),
+  payment_method: z.enum(["payu", "cod"]).optional(),
+  coupon_code: z.string().trim().optional(),
 });
 
 export default function CheckoutPage() {
-  const { user, refetch, setUser } = useAuth();
+  const { user } = useAuth();
+  const dispatch = useDispatch();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [form, setForm] = useState("login");
+  const payuFormRef = useRef(null);
 
-  const [selectedAddressId, setSelectedAddressId] = useState(null);
-  // ── NEW STATE ──────────────────────────────────────────────────────────────
+  const [selectedShippingAddressId, setSelectedShippingAddressId] =
+    useState(null);
   const [selectedBillingAddressId, setSelectedBillingAddressId] =
     useState(null);
   const [useSameAddress, setUseSameAddress] = useState(true);
   const [isAddressModal, setIsAddressModal] = useState(false);
   const [addressModalType, setAddressModalType] = useState("shipping");
-  // ──────────────────────────────────────────────────────────────────────────
-  const [localCartItems, setLocalCartItems] = useState([]);
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [isCodConfirmOpen, setIsCodConfirmOpen] = useState(false);
+  const [pendingPaymentMethod, setPendingPaymentMethod] = useState("payu");
 
-  const createMutation = useMutation({
-    mutationFn: createOrder,
-    onSuccess: () => {
-      toast.success("Order created successfully");
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-      queryClient.invalidateQueries({ queryKey: ["cart-items"] });
-      if (!user) {
-        localStorage.removeItem("cart");
-      }
-      router.push("/dashboard");
-    },
-    onError: (error) => {
-      handleError(error);
-    },
-  });
-
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: addToCart,
-    onSuccess: (data) => {},
-    onError: (err, variables) => {
-      handleError(err);
-    },
-  });
-
-  useEffect(() => {
-    if (!user) {
-      const storedCart = getLocalCart();
-      setLocalCartItems(storedCart);
-    }
-  }, [user]);
-
-  const handleLoginSuccess = async (loggedInUser) => {
-    try {
-      if (form === "signup") {
-        setForm("login");
-        return;
-      }
-      setUser(loggedInUser);
-
-      const storedCart = getLocalCart();
-
-      // Wait for all cart mutations to complete before refetching
-      await Promise.all(
-        storedCart.map(
-          (cart) =>
-            new Promise((resolve, reject) => {
-              mutate(
-                {
-                  product_variant_id: cart.product_variant_id,
-                  quantity: cart.quantity,
-                },
-                {
-                  onSuccess: resolve,
-                  onError: reject,
-                },
-              );
-            }),
-        ),
-      );
-
-      // Now refetch fresh data from server
-      await Promise.all([
-        queryClient.refetchQueries({ queryKey: ["cart-items"] }),
-        queryClient.refetchQueries({ queryKey: ["cart"] }),
-        queryClient.refetchQueries({ queryKey: ["addresses"] }),
-      ]);
-
-      setLoginModalOpen(false);
-    } catch (err) {
-      console.log("Error refetching after login:", err);
-    }
-  };
-
-  const { register, handleSubmit, formState, setValue } = useForm({
+  const { register, handleSubmit, formState, setValue, watch } = useForm({
     mode: "onChange",
     resolver: zodResolver(
-      createOrderSchema.pick({ shipping_address: user ? true : false }),
+      createOrderSchema.pick({ billing_address: true, shipping_address: true }),
     ),
     defaultValues: {
       shipping_address: {
@@ -149,7 +90,6 @@ export default function CheckoutPage() {
         phone: "",
         house: "",
       },
-      // ── NEW DEFAULT ──────────────────────────────────────────────────────
       billing_address: {
         fullname: "",
         street: "",
@@ -159,13 +99,15 @@ export default function CheckoutPage() {
         phone: "",
         house: "",
       },
-      // ────────────────────────────────────────────────────────────────────
     },
   });
 
-  const { isValid, errors } = formState;
-
-  const { data: cartItems, isLoading: isCartLoading } = useQuery({
+  const { isValid, errors, isDirty } = formState;
+  const {
+    data: cartItems,
+    isLoading: isCartLoading,
+    isError: isCartError,
+  } = useQuery({
     queryKey: ["cart-items"],
     queryFn: async () => {
       const { data } = await getCartItems();
@@ -174,447 +116,521 @@ export default function CheckoutPage() {
     enabled: !!user,
   });
 
-  const { data: addressData, isLoading: isAddressLoading } = useQuery({
-    queryKey: ["addresses"],
-    queryFn: getAddresses,
-    enabled: !!user,
+  const createMutation = useMutation({
+    mutationFn: createOrder,
+    onSuccess: async (data) => {
+      if (
+        data?.order?.payment_method === "cod" ||
+        pendingPaymentMethod === "cod"
+      ) {
+        toast.success("Order placed successfully with Cash on Delivery");
+        router.push("/dashboard");
+        return;
+      }
+      setTimeout(() => {
+        if (payuFormRef.current) {
+          payuFormRef.current.submit();
+        }
+      }, 100);
+    },
+    onError: (error) => {
+      handleError(error);
+    },
   });
 
-  const displayCartItems = user ? cartItems : localCartItems;
-  const subtotal = useMemo(() => {
-    if (!displayCartItems) return 0;
-    return displayCartItems.reduce((sum, item) => {
-      const price = Number(String(item.product_price).replace(/[^\d.-]/g, ""));
-      return sum + price * item.quantity;
-    }, 0);
-  }, [displayCartItems]);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["addresses"],
+    queryFn: getAddresses,
+  });
 
-  const onSubmit = (data) => {
+  // subtotal now comes from backend cart items response (product_price is authoritative)
+  const subtotal = useMemo(() => {
+    return (
+      cartItems?.reduce(
+        (sum, item) =>
+          sum +
+          Number(String(item.product_price).replace(/[^\d.-]/g, "")) *
+            item.quantity,
+        0,
+      ) ?? 0
+    );
+  }, [cartItems]);
+
+  const estimatedTaxes = subtotal * 0;
+  const total = subtotal + estimatedTaxes;
+
+  const placeOrder = (formData, paymentMethod) => {
     if (!user) {
-      setLoginModalOpen(true);
+      toast.error("Please login first to place an order");
       return;
     }
 
-    if (!cartItems || cartItems.length === 0) {
+    if (cartItems?.length === 0) {
       toast.error("Your cart is empty");
       return;
     }
 
-    const orderItems = cartItems.map((item) => ({
+    const order_items = cartItems?.map((item) => ({
+      item_type: item.item_type,
+      item_id: item.item_id,
       product_variant_id: item.product_variant_id,
       quantity: item.quantity,
     }));
 
     const order = {
-      ...data,
-      order_items: orderItems,
+      ...formData,
+      order_items,
+      payment_method: paymentMethod,
       billing_address: useSameAddress
-        ? data.shipping_address
-        : data.billing_address,
+        ? formData.shipping_address
+        : formData.billing_address,
     };
 
-    const toastId = toast.loading("Placing your order...");
+    const toastId = toast.loading(
+      paymentMethod === "cod"
+        ? "Placing your order..."
+        : "Placing your order...",
+    );
 
     createMutation.mutate(order, {
-      onSuccess: () => {
+      onSuccess: async (data) => {
         toast.dismiss(toastId);
-        toast.success("Order placed successfully");
       },
       onError: (error) => {
-        toast.dismiss(toastId);
         toast.error(error?.message || "Failed to place order");
+        toast.dismiss(toastId);
       },
     });
   };
 
-  if (isCartLoading && user) {
-    return <Loader />;
-  }
+  const onSubmit = (formData) => {
+    setPendingPaymentMethod("payu");
+    placeOrder(formData, "payu");
+  };
 
-  const renderAddressSection = () => {
-    if (!user) {
-      return (
-        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h3 className="font-semibold mb-2">Delivery Address</h3>
-          <div className="space-y-3">
-            <div>
-              <Label htmlFor="fullname">Full Name</Label>
-              <input
-                {...register("shipping_address.fullname")}
-                id="fullname"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="Enter your full name"
-              />
-              {errors?.shipping_address?.fullname && (
-                <span className="text-sm text-red-500">
-                  {errors.shipping_address.fullname.message}
-                </span>
-              )}
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="street">Street</Label>
-                <input
-                  {...register("shipping_address.street")}
-                  id="street"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Street address"
-                />
-                {errors?.shipping_address?.street && (
-                  <span className="text-sm text-red-500">
-                    {errors.shipping_address.street.message}
-                  </span>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="house">House Number</Label>
-                <input
-                  {...register("shipping_address.house")}
-                  id="house"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="House #"
-                />
-                {errors?.shipping_address?.house && (
-                  <span className="text-sm text-red-500">
-                    {errors.shipping_address.house.message}
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="city">City</Label>
-                <input
-                  {...register("shipping_address.city")}
-                  id="city"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="City"
-                />
-                {errors?.shipping_address?.city && (
-                  <span className="text-sm text-red-500">
-                    {errors.shipping_address.city.message}
-                  </span>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="state">State</Label>
-                <input
-                  {...register("shipping_address.state")}
-                  id="state"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="State"
-                />
-                {errors?.shipping_address?.state && (
-                  <span className="text-sm text-red-500">
-                    {errors.shipping_address.state.message}
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="postal_code">Postal Code</Label>
-                <input
-                  {...register("shipping_address.postal_code")}
-                  id="postal_code"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Postal code"
-                />
-                {errors?.shipping_address?.postal_code && (
-                  <span className="text-sm text-red-500">
-                    {errors.shipping_address.postal_code.message}
-                  </span>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="phone">Phone</Label>
-                <input
-                  {...register("shipping_address.phone")}
-                  id="phone"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Phone number"
-                />
-              </div>
-            </div>
-          </div>
+  const onCodConfirmSubmit = handleSubmit((formData) => {
+    setPendingPaymentMethod("cod");
+    setIsCodConfirmOpen(false);
+    placeOrder(formData, "cod");
+  });
+
+  const handleCodClick = handleSubmit(() => {
+    // form is valid, open confirm dialog before actually placing the order
+    setIsCodConfirmOpen(true);
+  });
+
+  const AddressCard = ({ address, isSelected, onSelect }) => (
+    <div
+      onClick={onSelect}
+      className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+        isSelected
+          ? "border-blue-500 bg-blue-50 shadow-md"
+          : "border-gray-200 hover:border-blue-300 hover:shadow-sm"
+      }`}
+    >
+      <div className="flex items-start gap-3">
+        <div className="flex-1">
+          <p className="font-semibold text-gray-900">{address.fullname}</p>
+          <p className="text-sm text-gray-600 mt-1">{address.street}</p>
+          <p className="text-sm text-gray-600">
+            {address.house}, {address.city}, {address.state} —{" "}
+            {address.postal_code}
+          </p>
+          {address.phone && (
+            <p className="text-sm text-gray-600 mt-1">{address.phone}</p>
+          )}
         </div>
-      );
-    }
+        <div
+          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-1 transition-all ${
+            isSelected
+              ? "border-blue-500 bg-blue-500"
+              : "border-gray-300 bg-white"
+          }`}
+        >
+          {isSelected && <div className="w-2 h-2 bg-white rounded-full" />}
+        </div>
+      </div>
+    </div>
+  );
+  return (
+    <>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="section bg-gray-50 min-h-screen py-8"
+      >
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* FORM SECTION */}
+            <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
+              {/* Shipping Address Section */}
+              <Card className="shadow-sm border-gray-200 p-4">
+                <CardHeader className="border-b border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-blue-600" />
+                    <CardTitle className="text-xl text-gray-900">
+                      Shipping Address
+                    </CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-2">
+                  {isLoading ? (
+                    <Loader />
+                  ) : isError ? (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                      {error?.message || "Failed to load addresses"}
+                    </div>
+                  ) : data?.addresses?.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <p className="mb-4">No addresses found</p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="gap-2 bg-transparent"
+                        onClick={() => setIsAddressModal(true)}
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add Your First Address
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                        {data.addresses.map((addr) => (
+                          <AddressCard
+                            key={addr.id}
+                            address={addr.address}
+                            isSelected={selectedShippingAddressId === addr.id}
+                            onSelect={() => {
+                              setSelectedShippingAddressId(addr.id);
+                              setValue("shipping_address", addr.address);
+                              if (useSameAddress) {
+                                setSelectedBillingAddressId(addr.id);
+                                setValue("billing_address", addr.address);
+                              }
+                            }}
+                          />
+                        ))}
+                      </div>
 
-    return (
-      <div>
-        {/* ── SHIPPING ADDRESS ────────────────────────────────────────────── */}
-        <h3 className="font-semibold mb-4">Select Delivery Address</h3>
-        {isAddressLoading && <Loader />}
-        {addressData && addressData.addresses && (
-          <div className="space-y-4">
-            {addressData.addresses.map((addr) => {
-              const isSelected = selectedAddressId === addr.id;
-              const borderClass = isSelected
-                ? "border-blue-500 bg-green-50 shadow-md"
-                : "border-gray-200 hover:border-gray-400";
+                      {errors?.shipping_address && (
+                        <p className="text-sm text-red-500 mt-4">
+                          {errors.shipping_address.message ||
+                            "Address is required"}
+                        </p>
+                      )}
 
-              return (
-                <label
-                  key={addr.id}
-                  className={
-                    borderClass +
-                    " flex items-center p-4 border rounded-lg cursor-pointer transition-all"
-                  }
-                >
-                  <input
-                    type="radio"
-                    value={addr.id}
-                    className="mt-1 mr-3 cursor-pointer accent-blue-500"
-                    onChange={() => {
-                      setSelectedAddressId(addr.id);
-                      setValue("shipping_address", addr.address);
-                      // ── auto-fill billing if same address is checked ──
-                      if (useSameAddress) {
-                        setSelectedBillingAddressId(addr.id);
-                        setValue("billing_address", addr.address);
+                      <Button
+                        type="button"
+                        className=" btn mt-4"
+                        onClick={() => {
+                          setAddressModalType("shipping");
+                          setIsAddressModal(true);
+                        }}
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add New Address
+                      </Button>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Billing Address Section */}
+              {!useSameAddress && (
+                <Card className="shadow-sm border-gray-200 p-4">
+                  <CardHeader className="border-b border-gray-100 pb-4">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-5 h-5 text-purple-600" />
+                      <CardTitle className="text-xl text-gray-900">
+                        Billing Address
+                      </CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-2">
+                    {isLoading ? (
+                      <Loader />
+                    ) : (
+                      <>
+                        <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+                          {data.addresses.map((addr) => (
+                            <AddressCard
+                              key={addr.id}
+                              address={addr.address}
+                              isSelected={selectedBillingAddressId === addr.id}
+                              onSelect={() => {
+                                setSelectedBillingAddressId(addr.id);
+                                setValue("billing_address", addr.address);
+                              }}
+                            />
+                          ))}
+                        </div>
+
+                        {errors?.billing_address && (
+                          <p className="text-sm text-red-500 mt-4">
+                            {errors.billing_address.message ||
+                              "Billing address is required"}
+                          </p>
+                        )}
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full mt-4 gap-2 bg-transparent"
+                          onClick={() => {
+                            setAddressModalType("billing");
+                            setIsAddressModal(true);
+                          }}
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add New Address
+                        </Button>
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Use Same Address Toggle */}
+              <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    id="same-address"
+                    checked={useSameAddress}
+                    onCheckedChange={(checked) => {
+                      setUseSameAddress(checked);
+                      if (checked && selectedShippingAddressId) {
+                        const shippingAddr = data.addresses.find(
+                          (a) => a.id === selectedShippingAddressId,
+                        );
+                        if (shippingAddr) {
+                          setSelectedBillingAddressId(
+                            selectedShippingAddressId,
+                          );
+                          setValue("billing_address", shippingAddr.address);
+                        }
                       }
                     }}
                   />
-                  <div className="text-gray-800">
-                    <p className="font-semibold">{addr.address.fullname}</p>
-                    <p className="text-sm">
-                      {addr.address.street}, {addr.address.city},{" "}
-                      {addr.address.state} - {addr.address.postal_code}
-                    </p>
-                  </div>
-                </label>
-              );
-            })}
-          </div>
-        )}
-        <div className="mt-4">
-          <Dialog
-            open={isAddressModal && addressModalType === "shipping"}
-            onOpenChange={(open) => {
-              setIsAddressModal(open);
-              setAddressModalType("shipping");
-            }}
-          >
-            <DialogTrigger
-              asChild
-              onClick={() => {
-                setAddressModalType("shipping");
-                setIsAddressModal(true);
-              }}
-            >
-              <button className="border-2 border-primary p-3 bg-transparent rounded-lg">
-                Add New Address
-              </button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Shipping Address</DialogTitle>
-              </DialogHeader>
-              <AddressForm callback={() => setIsAddressModal(false)} />
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        {/* ── USE SAME ADDRESS TOGGLE ──────────────────────────────────────── */}
-        <div className="mt-5 bg-gray-50 rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <Checkbox
-              id="same-address"
-              checked={useSameAddress}
-              onCheckedChange={(checked) => {
-                setUseSameAddress(checked);
-                if (checked && selectedAddressId) {
-                  const shippingAddr = addressData.addresses.find(
-                    (a) => a.id === selectedAddressId,
-                  );
-                  if (shippingAddr) {
-                    setSelectedBillingAddressId(selectedAddressId);
-                    setValue("billing_address", shippingAddr.address);
-                  }
-                }
-              }}
-            />
-            <Label
-              htmlFor="same-address"
-              className="text-sm text-gray-700 cursor-pointer font-normal"
-            >
-              Use same address for billing
-            </Label>
-          </div>
-        </div>
-
-        {/* ── BILLING ADDRESS (shown only when toggle is OFF) ──────────────── */}
-        {!useSameAddress && (
-          <div className="mt-6">
-            <h3 className="font-semibold mb-4 text-primary-700">
-              Select Billing Address
-            </h3>
-            {isAddressLoading && <Loader />}
-            {addressData && addressData.addresses && (
-              <div className="space-y-4">
-                {addressData.addresses.map((addr) => {
-                  const isSelected = selectedBillingAddressId === addr.id;
-                  const borderClass = isSelected
-                    ? "border-primary-500 bg-primary-50 shadow-md"
-                    : "border-gray-200 hover:border-gray-400";
-
-                  return (
-                    <label
-                      key={addr.id}
-                      className={
-                        borderClass +
-                        " flex items-center p-4 border rounded-lg cursor-pointer transition-all"
-                      }
-                    >
-                      <input
-                        type="radio"
-                        value={addr.id}
-                        name="billing_address_radio"
-                        className="mt-1 mr-3 cursor-pointer accent-primary-500"
-                        onChange={() => {
-                          setSelectedBillingAddressId(addr.id);
-                          setValue("billing_address", addr.address);
-                        }}
-                      />
-                      <div className="text-gray-800">
-                        <p className="font-semibold">{addr.address.fullname}</p>
-                        <p className="text-sm">
-                          {addr.address.street}, {addr.address.city},{" "}
-                          {addr.address.state} - {addr.address.postal_code}
-                        </p>
-                      </div>
-                    </label>
-                  );
-                })}
+                  <Label
+                    htmlFor="same-address"
+                    className="text-sm text-gray-700 cursor-pointer font-normal"
+                  >
+                    Use same address for billing
+                  </Label>
+                </div>
               </div>
-            )}
-            <div className="mt-4">
-              <Dialog
-                open={isAddressModal && addressModalType === "billing"}
-                onOpenChange={(open) => {
-                  setIsAddressModal(open);
-                  setAddressModalType("billing");
-                }}
-              >
-                <DialogTrigger
-                  asChild
-                  onClick={() => {
-                    setAddressModalType("billing");
-                    setIsAddressModal(true);
-                  }}
-                >
-                  <button className="border-2 border-primary-500 p-3 bg-transparent rounded-lg text-primary-700">
-                    Add New Billing Address
-                  </button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add New Billing Address</DialogTitle>
-                  </DialogHeader>
-                  <AddressForm callback={() => setIsAddressModal(false)} />
-                </DialogContent>
-              </Dialog>
+
+              {/* Address Modal */}
+
+              {/* Payment Section */}
+              <Card className="shadow-sm border-gray-200 p-4">
+                <CardContent className="pt-6 space-y-3">
+                  {!user && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-center text-sm font-medium">
+                      Please log in first to place an order
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    disabled={
+                      createMutation.isPending ||
+                      !user ||
+                      cartItems?.length === 0
+                    }
+                    className="w-full h-12 text-base font-semibold"
+                  >
+                    {createMutation.isPending && pendingPaymentMethod === "payu"
+                      ? "Processing..."
+                      : "Pay Now"}
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={
+                      createMutation.isPending ||
+                      !user ||
+                      cartItems?.length === 0
+                    }
+                    className="w-full h-12 text-base font-semibold gap-2"
+                    onClick={handleCodClick}
+                  >
+                    <Banknote className="w-4 h-4" />
+                    {createMutation.isPending && pendingPaymentMethod === "cod"
+                      ? "Processing..."
+                      : "Cash on Delivery"}
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* ORDER SUMMARY SECTION */}
+            <div className="lg:col-span-1 order-1 lg:order-2">
+              <Card className="shadow-sm border-gray-200 sticky top-4 p-4">
+                <CardHeader className="border-b border-gray-100">
+                  <CardTitle className="text-xl text-gray-900">
+                    Order Summary
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-2">
+                  <div className="space-y-4 mb-6 max-h-70 overflow-y-auto">
+                    {cartItems?.length === 0 ? (
+                      <p className="text-center text-gray-500 py-8">
+                        Your cart is empty.
+                      </p>
+                    ) : (
+                      cartItems?.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex gap-3 pb-4 border-b border-gray-100 last:border-b-0 last:pb-0"
+                        >
+                          <div className="relative w-16 h-16 flex-shrink-0 border border-gray-200 rounded-md bg-gray-50 overflow-hidden">
+                            <Image
+                              src={`${process.env.NEXT_PUBLIC_FILE_BASE}${item?.pictures?.[0]}`}
+                              alt={item.title}
+                              fill
+                              className="object-contain p-1"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              {item.title}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Qty: {item.quantity}
+                            </p>
+                            <p className="text-sm font-semibold text-gray-900 mt-1">
+                              ₹
+                              {(
+                                Number(item.product_price) * item.quantity
+                              ).toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  <div className="border-t border-gray-200 pt-4 space-y-2 text-sm">
+                    <div className="flex justify-between text-gray-700">
+                      <span>Subtotal</span>
+                      <span className="font-medium">
+                        ₹{subtotal.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-gray-700">
+                      <span>Shipping</span>
+                      <span className="font-medium text-green-600">FREE</span>
+                    </div>
+                    <div className="flex justify-between font-bold border-t border-gray-200 pt-3 mt-3 text-base text-gray-900">
+                      <span>Total</span>
+                      <span>₹{total.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
-        )}
-      </div>
-    );
-  };
+        </div>
+      </form>
 
-  const renderOrderSummary = () => {
-    if (!displayCartItems || displayCartItems.length === 0) {
-      return (
-        <p className="text-center text-gray-500 text-lg py-4">
-          Your cart is empty.
-        </p>
-      );
-    }
-
-    return displayCartItems.map((item, index) => {
-      const price = Number(String(item.price).replace(/[^\d.-]/g, ""));
-      const itemTotal = item.product_price * item.quantity;
-
-      return (
-        <div
-          key={index}
-          className="flex items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0"
+      {createMutation.isSuccess && pendingPaymentMethod === "payu" && (
+        <form
+          action={process.env.NEXT_PUBLIC_PAYU_URL}
+          method="POST"
+          ref={payuFormRef}
+          style={{ display: "none" }}
         >
-          <div className="relative w-20 h-20 flex-shrink-0 border rounded-lg bg-gray-100">
-            <Image
-              src={
-                process.env.NEXT_PUBLIC_FILE_BASE
-                  ? process.env.NEXT_PUBLIC_FILE_BASE +
-                    (item.pictures?.[0] || "")
-                  : ""
-              }
-              alt={item.title || "product"}
-              fill
-              className="object-contain p-1"
-            />
-            <span className="absolute z-10 -top-2 -right-2 bg-yellow-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shadow-md">
-              {item.quantity}
-            </span>
-          </div>
-          <div className="flex-1">
-            <p className="text-base font-medium text-gray-800">{item.title}</p>
-            <p className="text-sm text-gray-500">Price: {item.product_price}</p>
-            <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
-          </div>
-          <p className="text-base font-semibold text-gray-800">
-            {"₹" + itemTotal.toFixed(2)}
-          </p>
-        </div>
-      );
-    });
-  };
-
-  return (
-    <>
-      <CheckoutLoginModal
-        open={loginModalOpen}
-        onOpenChange={setLoginModalOpen}
-        onLoginSuccess={handleLoginSuccess}
-        form={form}
-        setForm={setForm}
-      />
-
-      <div className="py-20 bg-blue-50">
-        <form onSubmit={handleSubmit(onSubmit)} className="pt-10">
-          <div className="px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
-              <div className="lg:col-span-2 space-y-8 order-2 lg:order-1">
-                <div className="bg-white rounded-xl shadow-2xl p-6">
-                  {user && <>{renderAddressSection()}</>}
-
-                  <div className="mt-6">
-                    <Button type="submit" disabled={!isValid && !user}>
-                      Cash on Delivery
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="lg:col-span-1 bg-white p-8 rounded-xl shadow-lg lg:sticky top-12 h-fit order-1 lg:order-2">
-                <h2 className="text-2xl font-bold mb-6 text-gray-800">
-                  Order Summary
-                </h2>
-                <div className="space-y-6 mb-8">{renderOrderSummary()}</div>
-                <div className="border-t border-gray-200 pt-6 space-y-3 text-base">
-                  <div className="flex justify-between text-gray-700">
-                    <span>Subtotal:</span>
-                    <span>{"₹" + subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between font-bold border-t border-gray-200 pt-4 mt-4 text-xl text-gray-900">
-                    <span>Total:</span>
-                    <span>{"₹" + subtotal.toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <input type="hidden" name="key" value={createMutation.data.key} />
+          <input
+            type="hidden"
+            name="txnid"
+            value={createMutation.data.transaction_id}
+          />
+          <input
+            type="hidden"
+            name="amount"
+            value={createMutation.data.order.amount}
+          />
+          <input
+            type="hidden"
+            name="productinfo"
+            value={createMutation.data.order.order_no}
+          />
+          <input
+            type="hidden"
+            name="firstname"
+            value={createMutation.data.order.first_name}
+          />
+          <input
+            type="hidden"
+            name="email"
+            value={createMutation.data.order.email}
+          />
+          <input
+            type="hidden"
+            name="phone"
+            value={createMutation.data.order.phone}
+          />
+          <input
+            type="hidden"
+            name="surl"
+            value={`${config.api_base}/payments/success`}
+          />
+          <input
+            type="hidden"
+            name="furl"
+            value={`${config.api_base}/payments/failure`}
+          />
+          <input type="hidden" name="hash" value={createMutation.data.hash} />
         </form>
-      </div>
+      )}
+
+      <Dialog open={isAddressModal} onOpenChange={setIsAddressModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              Add New {addressModalType === "shipping" ? "Shipping" : "Billing"}{" "}
+              Address
+            </DialogTitle>
+          </DialogHeader>
+          <AddressForm
+            type="create"
+            callback={() => setIsAddressModal(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* COD Confirm Dialog */}
+      <Dialog open={isCodConfirmOpen} onOpenChange={setIsCodConfirmOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Confirm Cash on Delivery</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-gray-600">
+            You have selected Cash on Delivery. Please pay ₹{total.toFixed(2)}{" "}
+            in cash when your order is delivered. Would you like to confirm your
+            order?
+          </p>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsCodConfirmOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={onCodConfirmSubmit}
+              disabled={createMutation.isPending}
+            >
+              {createMutation.isPending ? "Placing Order..." : "Confirm Order"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

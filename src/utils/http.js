@@ -50,6 +50,10 @@ const http = (headerType = "json", baseURL = API_ROOT) => {
     return client.get(path).then((response) => response.data);
   }
 
+  async function getFull(path, config = {}) {
+    return client.get(path, config);
+  }
+
   async function post(path, payload, isFormData = false) {
     let config = {};
     if (isFormData) {
@@ -87,6 +91,7 @@ const http = (headerType = "json", baseURL = API_ROOT) => {
     put,
     patch,
     delete: _delete,
+    getFull,
   };
 };
 

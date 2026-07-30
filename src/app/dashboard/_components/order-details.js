@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
 import http from "@/utils/http";
 import { endpoints } from "@/utils/endpoints";
-import { Loader2 } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
+import { downloadPdf } from "@/utils/download-odf";
+import { useOrderInvoice } from "@/hooks/use-orders";
 
 const statusMap = {
   completed: "bg-green-100 text-green-700",
@@ -22,52 +24,16 @@ export function OrdersDetails({ orders }) {
   const [page, setPage] = useState(1);
   const [id, setId] = useState(null);
 
-  const { data, mutate, isPending } = useMutation({
-    mutationFn: async () => {
-      const data = await http().post(
-        `${endpoints.orders.getAll}/${id}/invoice`,
-        {},
-        false,
-        "arraybuffer"
-      );
-      return data;
-    },
-  });
-
-  useEffect(() => {
-    if (data) {
-      try {
-        let binaryData;
-
-        if (typeof data === "string") {
-          binaryData = new Uint8Array(
-            data.split("").map((char) => char.charCodeAt(0))
-          );
-        } else {
-          binaryData = data;
-        }
-
-        const blob = new Blob([binaryData], { type: "application/pdf" });
-
-        if (blob.size === 0) {
-          console.error("PDF blob is empty!");
-          return;
-        }
-
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `Invoice-${Date.now()}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Error downloading PDF:", error);
-      }
+  const downloadInvoiceMutation = useOrderInvoice(id);
+  const handleDownloadInvoice = async () => {
+    try {
+      const { blob, filename } = await downloadInvoiceMutation.mutateAsync();
+      downloadPdf(blob, filename);
+    } catch (err) {
+      console.error(err);
     }
-  }, [data, id]);
-  console.log({ isPending, id });
+  };
+
   if (!orders || orders.length === 0) {
     return (
       <div className="text-center text-gray-500 text-lg mt-10">
@@ -79,7 +45,7 @@ export function OrdersDetails({ orders }) {
   const pageCount = Math.ceil(orders.length / ORDERS_PER_PAGE);
   const paginatedOrders = orders.slice(
     (page - 1) * ORDERS_PER_PAGE,
-    page * ORDERS_PER_PAGE
+    page * ORDERS_PER_PAGE,
   );
 
   return (
@@ -140,7 +106,7 @@ export function OrdersDetails({ orders }) {
                   <Badge
                     className={cn(
                       "text-xs font-medium px-3 py-1 rounded-full shadow-sm capitalize",
-                      statusMap[order.order_status] || statusMap.pending
+                      statusMap[order.order_status] || statusMap.pending,
                     )}
                   >
                     {order.order_status}
@@ -149,26 +115,39 @@ export function OrdersDetails({ orders }) {
 
                 {order.is_paid && (
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <Button
-                      type="button"
-                      disabled={isPending && id === order.id}
-                      className="
-    text-xs font-medium px-3 py-1 rounded-full shadow-sm
-    bg-green-500 text-white
-    disabled:opacity-60
-    disabled:cursor-not-allowed
-    flex items-center gap-2
-  "
-                      onClick={() => {
-                        setId(order.id);
-                        mutate();
-                      }}
-                    >
-                      {isPending && id === order.id && (
-                        <Loader2 className="animate-spin" />
-                      )}
-                      Download invoice
-                    </Button>
+                    <div className="space-x-2">
+                      {["invoice"].map((doc, ind) => {
+                        const isPending =
+                          id === order.id &&
+                          doc === "invoice" &&
+                          downloadInvoiceMutation.isPending;
+
+                        return (
+                          <Button
+                            key={ind}
+                            disabled={isPending}
+                            onClick={() => {
+                              setId(order.id);
+                              setTimeout(() => {
+                                handleDownloadInvoice();
+                              });
+                            }}
+                            className={cn(
+                              buttonVariants({ variant: "default" }),
+                              "capitalize",
+                            )}
+                            target="_blank"
+                          >
+                            {doc}{" "}
+                            {isPending ? (
+                              <Loader2 className="animate-spin" />
+                            ) : (
+                              <Download />
+                            )}
+                          </Button>
+                        );
+                      })}
+                    </div>
                   </td>
                 )}
               </tr>

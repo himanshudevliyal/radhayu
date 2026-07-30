@@ -67,12 +67,13 @@ export default function LoginPage() {
             </div>
 
             <h2 className="text-3xl font-bold text-balance">
-              Shuddh Swad, Paramparik Mithas
+              Prakriti Ka Vishwas, Ayurveda Ka Sparsh
             </h2>
 
             <p className="text-red-100 text-lg text-balance">
-              Murliwala brings you premium quality namkeen, sweets & festive
-              gift boxes made with traditional recipes and pure ingredients.
+              Radhayu Herbals brings you natural Ayurvedic products crafted with
+              pure herbs and traditional knowledge to support a healthy and
+              balanced lifestyle.
             </p>
           </div>
 
@@ -82,10 +83,12 @@ export default function LoginPage() {
                 <Package className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Premium Namkeen Range</h3>
+                <h3 className="font-semibold text-lg">
+                  Natural Herbal Products
+                </h3>
                 <p className="text-red-100">
-                  Freshly prepared namkeen with authentic taste, perfect for
-                  every occasion.
+                  Premium quality herbal solutions made with carefully selected
+                  natural ingredients for everyday wellness.
                 </p>
               </div>
             </div>
@@ -95,10 +98,10 @@ export default function LoginPage() {
                 <Gift className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Festive Gift Boxes</h3>
+                <h3 className="font-semibold text-lg">Pure Ayurvedic Care</h3>
                 <p className="text-red-100">
-                  Beautifully packed sweet & namkeen boxes ideal for weddings,
-                  festivals & celebrations.
+                  Experience the power of Ayurveda with products inspired by
+                  traditional herbal practices and modern quality standards.
                 </p>
               </div>
             </div>
@@ -108,10 +111,12 @@ export default function LoginPage() {
                 <Heart className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Pure & Hygienic</h3>
+                <h3 className="font-semibold text-lg">
+                  Trusted Quality & Purity
+                </h3>
                 <p className="text-red-100">
-                  Made using high-quality ingredients with strict hygiene and
-                  quality standards.
+                  Carefully formulated products ensuring purity, safety, and
+                  wellness for you and your family.
                 </p>
               </div>
             </div>

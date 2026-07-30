@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import config from "@/config";
 import { cn } from "@/lib/utils";
 
@@ -10,7 +10,10 @@ export default function ProductCards({ product }) {
   const isMultiImage = product.pictures?.length > 1;
 
   return (
-    <div className="group rounded-3xl border p-2 transition-all duration-500 hover:-translate-y-2">
+    <Link
+      href={`/products/${product.slug}?variant=${product.variants?.[0]?.id}`}
+      className="group rounded-3xl border p-2 transition-all duration-500 hover:-translate-y-2"
+    >
       {/* Image Section */}
       <div className="relative">
         <div className="relative overflow-hidden rounded-3xl bg-white p-4">
@@ -67,15 +70,15 @@ export default function ProductCards({ product }) {
             </div>
           </div>
 
-          <Link
-            href={`/products/${product.slug}?variant=${product.variants?.[0]?.id}`}
+          <div
+            // href={`/products/${product.slug}?variant=${product.variants?.[0]?.id}`}
             className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent"
           >
-            <BookOpen className="h-4 w-4" />
-            View Product
-          </Link>
+            <ShoppingBag className="h-4 w-4" />
+            Buy Now
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

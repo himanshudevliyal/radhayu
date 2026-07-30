@@ -90,7 +90,7 @@ export default function FAQ() {
         <Accordion type="single" collapsible className="w-full space-y-2">
           {leftFaqs.map((item, i) => (
             <AccordionItem key={i} value={`left-${i}`}>
-              <AccordionTrigger className="text-left text-xl font-semibold  font-font-heading">
+              <AccordionTrigger className="text-left text-xl font-semibold  ">
                 {item.q}
               </AccordionTrigger>
               <AccordionContent className="text-lg text-gray-700">

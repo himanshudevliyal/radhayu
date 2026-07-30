@@ -7,9 +7,7 @@ import { Train } from "lucide-react";
 import { Check } from "lucide-react";
 import { Truck } from "lucide-react";
 
-import { useMutation } from "@tanstack/react-query";
-import http from "@/utils/http";
-import { endpoints } from "@/utils/endpoints";
+import { useOrderInvoice } from "@/hooks/use-orders";
 
 import {
   Package,
@@ -25,6 +23,7 @@ import {
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import Loader from "@/components/loader";
+import { downloadPdf } from "@/utils/download-odf";
 
 const STATUS_STEPS = [
   { label: "Order Accepted", icon: ClipboardCheck },
@@ -50,29 +49,16 @@ export default function OrderDetailsPage({}) {
     queryKey: ["orders", id],
     queryFn: () => getOrder(id),
   });
-  const invoiceMutation = useMutation({
-    mutationFn: async (orderId) => {
-      return http().post(
-        `${endpoints.orders.getAll}/${orderId}/invoice`,
-        {},
-        false,
-        "arraybuffer"
-      );
-    },
-    onSuccess: (data, orderId) => {
-      const blob = new Blob([data], { type: "application/pdf" });
-      const url = window.URL.createObjectURL(blob);
+  const downloadInvoiceMutation = useOrderInvoice(id);
 
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `Invoice-${orderId}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    },
-  });
+  const handleDownloadInvoice = async () => {
+    try {
+      const { blob, filename } = await downloadInvoiceMutation.mutateAsync();
+      downloadPdf(blob, filename);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   if (isLoading) return <Loader></Loader>;
   if (isError) return <p className="p-6 text-red-500">{error.message}</p>;
@@ -86,7 +72,7 @@ export default function OrderDetailsPage({}) {
 
   const currentStatus = order?.data?.order_status;
   const currentStatusIndex = STATUS_STEPS.findIndex(
-    (step) => step.label.toLowerCase() === currentStatus?.toLowerCase()
+    (step) => step.label.toLowerCase() === currentStatus?.toLowerCase(),
   );
 
   return (
@@ -119,15 +105,15 @@ export default function OrderDetailsPage({}) {
               {order?.data.is_paid && (
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
-                    onClick={() => invoiceMutation.mutate(order?.data?.id)}
-                    disabled={invoiceMutation.isLoading}
+                    onClick={handleDownloadInvoice}
+                    disabled={downloadInvoiceMutation.isPending}
                     className={`btn flex items-center gap-2 w-full text-nowrap ${
-                      invoiceMutation.isLoading
+                      downloadInvoiceMutation.isPending
                         ? "opacity-70 cursor-not-allowed"
                         : ""
                     }`}
                   >
-                    {invoiceMutation.isPending ? (
+                    {downloadInvoiceMutation.isPending ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
                         Downloading...
