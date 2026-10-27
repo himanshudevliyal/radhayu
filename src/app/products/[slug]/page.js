@@ -38,7 +38,6 @@ export default async function Product({ params }) {
   );
 }
 
-// ✅ Optional: generateMetadata for SEO (server-only, no extra fetch needed)
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const product = await getProduct(slug);
